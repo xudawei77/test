@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第五章 — 基金经理评估 | 量化基金培训</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --ink: #0f172a;
+            --slate: #334155;
+            --muted: #64748b;
+            --silver: #94a3b8;
+            --fog: #e2e8f0;
+            --snow: #f8fafc;
+            --accent: #667eea;
+            --accent-deep: #764ba2;
+            --accent-glow: rgba(102, 126, 234, 0.15);
+            --warm: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --card-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.04);
+            --card-shadow-hover: 0 4px 12px rgba(102,126,234,0.12), 0 16px 48px rgba(15,23,42,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--ink);
+            background: var(--snow);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(248,250,252,0.85);
+            backdrop-filter: blur(16px) saturate(1.4);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px; height: 56px;
+        }
+        .nav-brand {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700; font-size: 16px; color: var(--ink);
+            letter-spacing: 0.02em;
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 6px; }
+        .nav-links a {
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            text-decoration: none; padding: 6px 12px; border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); background: var(--accent-glow); }
+        .nav-links a.active {
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+        }
+
+        /* ── Hero ── */
+        .hero {
+            position: relative;
+            min-height: 420px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            padding: 100px 32px 60px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 40%, rgba(102,126,234,0.08), transparent),
+                radial-gradient(ellipse 70% 50% at 80% 60%, rgba(118,75,162,0.06), transparent),
+                linear-gradient(180deg, var(--snow) 0%, #f1f5f9 100%);
+        }
+        .hero-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(102,126,234,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102,126,234,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
+        }
+        .hero-content { position: relative; text-align: center; max-width: 720px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+            color: var(--accent); text-transform: uppercase;
+            background: var(--accent-glow);
+            padding: 6px 16px; border-radius: 100px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(102,126,234,0.12);
+        }
+        .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+        .hero h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(28px, 4.5vw, 48px);
+            font-weight: 900; line-height: 1.2;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 17px; color: var(--muted); line-height: 1.8;
+            max-width: 560px; margin: 0 auto;
+        }
+
+        /* ── Content Container ── */
+        .content {
+            max-width: 960px; margin: 0 auto; padding: 0 32px;
+        }
+
+        /* ── Section ── */
+        .section {
+            margin-bottom: 56px;
+            opacity: 0; transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+        .section:nth-child(2) { animation-delay: 0.05s; }
+        .section:nth-child(3) { animation-delay: 0.1s; }
+        .section:nth-child(4) { animation-delay: 0.15s; }
+        .section:nth-child(5) { animation-delay: 0.2s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        .section-label {
+            font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+            color: var(--accent); text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .section-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 28px; font-weight: 700; color: var(--ink);
+            margin-bottom: 20px; line-height: 1.3;
+        }
+        .section-desc {
+            font-size: 15px; color: var(--slate); line-height: 1.8;
+            margin-bottom: 28px;
+        }
+
+        /* ── White Card ── */
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 32px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        /* ── Subheading ── */
+        h3.sub {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 18px; font-weight: 700; color: var(--ink);
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--fog);
+        }
+
+        /* ── Bullet List ── */
+        .bullet-list { list-style: none; padding: 0; margin-bottom: 20px; }
+        .bullet-list li {
+            position: relative;
+            padding: 8px 0 8px 24px;
+            font-size: 14px; color: var(--slate); line-height: 1.7;
+        }
+        .bullet-list li::before {
+            content: '';
+            position: absolute; left: 4px; top: 16px;
+            width: 7px; height: 7px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+        }
+        .bullet-list li strong { color: var(--ink); font-weight: 600; }
+        .bullet-list .sub-note {
+            display: block; padding-left: 0; margin-top: 4px;
+            font-size: 13px; color: var(--muted);
+        }
+
+        /* ── Data Table ── */
+        .data-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 13px; margin: 20px 0;
+            border-radius: 10px; overflow: hidden;
+        }
+        .data-table thead th {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: white;
+            font-weight: 600; font-size: 12px;
+            padding: 12px 14px; text-align: left;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+        .data-table tbody td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--fog);
+            color: var(--slate);
+            vertical-align: top;
+        }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: rgba(102,126,234,0.03); }
+        .data-table .company-name {
+            font-weight: 600; color: var(--ink);
+            white-space: nowrap;
+        }
+
+        /* ── Dimension Cards Grid ── */
+        .dim-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .dim-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .dim-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-deep));
+        }
+        .dim-card-num {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 36px; font-weight: 900;
+            background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.08));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .dim-card h4 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 16px; font-weight: 700; color: var(--ink);
+            margin-bottom: 12px;
+        }
+        .dim-card ul {
+            list-style: none; padding: 0;
+        }
+        .dim-card ul li {
+            font-size: 13px; color: var(--slate); line-height: 1.7;
+            padding: 4px 0 4px 18px;
+            position: relative;
+        }
+        .dim-card ul li::before {
+            content: '\25B8';
+            position: absolute; left: 0; top: 4px;
+            color: var(--accent); font-size: 11px;
+        }
+
+        /* ── Radar Chart Visual ── */
+        .radar-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 40px; flex-wrap: wrap;
+            margin: 28px 0;
+        }
+        .radar-svg-wrap {
+            flex-shrink: 0;
+        }
+        .radar-legend {
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .radar-legend-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; color: var(--slate);
+        }
+        .radar-legend-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+
+        /* ── Case Cards ── */
+        .case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .case-card {
+            background: linear-gradient(135deg, rgba(102,126,234,0.04), rgba(118,75,162,0.02));
+            border: 1px solid rgba(102,126,234,0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .case-card-header {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 12px;
+        }
+        .case-card-logo {
+            width: 36px; height: 36px; border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 14px;
+            font-family: 'Noto Serif SC', serif;
+        }
+        .case-card-name {
+            font-weight: 700; font-size: 15px; color: var(--ink);
+        }
+        .case-card p {
+            font-size: 13px; color: var(--slate); line-height: 1.7;
+            margin: 6px 0;
+        }
+        .case-card .tag {
+            display: inline-block;
+            font-size: 11px; font-weight: 600;
+            padding: 3px 10px; border-radius: 100px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            margin: 2px 4px 2px 0;
+        }
+
+        /* ── Highlight Box ── */
+        .highlight-box {
+            border-left: 4px solid var(--accent);
+            background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.02));
+            border-radius: 0 10px 10px 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+        .highlight-box h4 {
+            font-size: 14px; font-weight: 700; color: var(--accent);
+            margin-bottom: 8px;
+        }
+        .highlight-box p, .highlight-box li {
+            font-size: 14px; color: var(--slate); line-height: 1.7;
+        }
+
+        /* ── Comparison Strip ── */
+        .compare-strip {
+            display: flex; gap: 16px; overflow-x: auto;
+            padding: 8px 0; margin: 20px 0;
+        }
+        .compare-item {
+            flex: 0 0 180px;
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+        .compare-item .label {
+            font-size: 11px; font-weight: 600; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+        .compare-item .value {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 24px; font-weight: 900; color: var(--ink);
+        }
+        .compare-item .note {
+            font-size: 11px; color: var(--silver); margin-top: 4px;
+        }
+
+        /* ── Performance Curve Visual ── */
+        .curve-container {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            margin: 20px 0;
+        }
+        .curve-container h4 {
+            font-size: 14px; font-weight: 700; color: var(--ink);
+            margin-bottom: 16px;
+        }
+
+        /* ── Scale Capacity Bar ── */
+        .capacity-bars { margin: 20px 0; }
+        .capacity-row {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 14px;
+        }
+        .capacity-label {
+            width: 90px; font-size: 13px; font-weight: 600;
+            color: var(--ink); text-align: right; flex-shrink: 0;
+        }
+        .capacity-track {
+            flex: 1; height: 28px; background: var(--fog);
+            border-radius: 6px; position: relative; overflow: hidden;
+        }
+        .capacity-fill {
+            height: 100%; border-radius: 6px;
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 12px;
+            font-size: 11px; font-weight: 700; color: white;
+            transition: width 0.8s ease;
+        }
+        .capacity-fill.t0 { width: 12%; background: linear-gradient(90deg, #f59e0b, #f97316); }
+        .capacity-fill.hf { width: 30%; background: linear-gradient(90deg, var(--accent), #8b5cf6); }
+        .capacity-fill.mid { width: 55%; background: linear-gradient(90deg, #6366f1, var(--accent-deep)); }
+        .capacity-fill.qa { width: 82%; background: linear-gradient(90deg, var(--accent-deep), #7c3aed); }
+
+        /* ── Checklist ── */
+        .checklist { list-style: none; padding: 0; }
+        .checklist li {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--fog);
+            font-size: 14px; color: var(--slate); line-height: 1.6;
+        }
+        .checklist li:last-child { border-bottom: none; }
+        .check-box {
+            flex-shrink: 0; width: 22px; height: 22px;
+            border: 2px solid var(--fog); border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 1px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .check-box:hover { border-color: var(--accent); }
+        .check-box.checked {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            border-color: transparent;
+        }
+        .check-box.checked::after {
+            content: '\2713'; color: white; font-size: 13px; font-weight: 700;
+        }
+
+        /* ── Dimension Checklist Group ── */
+        .checklist-group {
+            margin: 24px 0;
+        }
+        .checklist-group h4 {
+            font-size: 15px; font-weight: 700; color: var(--ink);
+            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .checklist-group h4 .num-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: white; font-size: 11px; font-weight: 700;
+        }
+
+        /* ── Tip Box ── */
+        .tip-box {
+            background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02));
+            border: 1px solid rgba(245,158,11,0.15);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 20px 0;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .tip-icon {
+            flex-shrink: 0; font-size: 20px; margin-top: 1px;
+        }
+        .tip-box p {
+            font-size: 14px; color: var(--slate); line-height: 1.7;
+        }
+        .tip-box strong { color: var(--warm); }
+
+        /* ── Steps ── */
+        .steps { margin: 20px 0; }
+        .step {
+            display: flex; gap: 16px; align-items: flex-start;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--fog);
+        }
+        .step:last-child { border-bottom: none; }
+        .step-num {
+            flex-shrink: 0; width: 32px; height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: white; font-weight: 700; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .step-content h4 {
+            font-size: 14px; font-weight: 700; color: var(--ink);
+            margin-bottom: 4px;
+        }
+        .step-content p {
+            font-size: 13px; color: var(--muted); line-height: 1.6;
+        }
+
+        /* ── Product Fields ── */
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .field-item {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+        }
+        .field-label {
+            font-size: 11px; font-weight: 600; color: var(--muted);
+            letter-spacing: 0.04em; margin-bottom: 6px;
+        }
+        .field-value {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 16px; font-weight: 700; color: var(--ink);
+        }
+        .field-note {
+            font-size: 11px; color: var(--silver); margin-top: 4px;
+        }
+
+        /* ── Prev/Next Navigation ── */
+        .page-nav {
+            display: flex; justify-content: space-between; align-items: stretch;
+            gap: 16px;
+            max-width: 960px; margin: 40px auto;
+            padding: 0 32px 64px;
+        }
+        .page-nav a {
+            display: flex; flex-direction: column; justify-content: center;
+            text-decoration: none;
+            flex: 1; max-width: 45%;
+            padding: 24px 28px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+        }
+        .page-nav a:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.15);
+        }
+        .page-nav a.next { text-align: right; margin-left: auto; }
+        .page-nav .nav-dir {
+            font-size: 11px; font-weight: 600; color: var(--muted);
+            letter-spacing: 0.06em; text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .page-nav .nav-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 17px; font-weight: 700; color: var(--ink);
+        }
+        .page-nav a:hover .nav-title { color: var(--accent); }
+
+        /* ── Footer ── */
+        footer {
+            max-width: 1200px; margin: 0 auto; padding: 32px;
+            border-top: 1px solid var(--fog);
+            text-align: center;
+        }
+        footer p { font-size: 12px; color: var(--silver); }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { min-height: 340px; padding: 100px 20px 40px; }
+            .content { padding: 0 20px; }
+            .card { padding: 20px; }
+            .dim-grid { grid-template-columns: 1fr; }
+            .radar-container { flex-direction: column; }
+            .data-table { font-size: 12px; }
+            .data-table thead th, .data-table tbody td { padding: 10px 8px; }
+            .compare-strip { flex-wrap: wrap; }
+            .compare-item { flex: 0 0 calc(50% - 8px); }
+            .field-grid { grid-template-columns: 1fr 1fr; }
+            .page-nav { padding: 0 20px 40px; flex-direction: column; }
+            .page-nav a { max-width: 100%; }
+        }
+
+        @media print {
+            nav { position: static; border: none; }
+            .hero { min-height: auto; padding: 20px; }
+            .hero::before, .hero-grid { display: none; }
+            .card, .dim-card, .case-card { box-shadow: none; break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="index.html" class="nav-brand">量化基金培训</a>
+        <div class="nav-links">
+            <a href="01-量化投资基础.html">基础原理</a>
+            <a href="02-策略全景图.html">策略全景</a>
+            <a href="03-因子与模型.html">因子模型</a>
+            <a href="04-风险管理.html">风险管理</a>
+            <a href="05-基金经理评估.html" class="active">经理评估</a>
+            <a href="06-机构图谱.html">机构图谱</a>
+            <a href="07-配置框架.html">配置框架</a>
+            <a href="08-案例实战.html">案例实战</a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+        <div class="hero-badge">第五章</div>
+        <h1>基金经理评估<br><em>尽调框架与业绩解读</em></h1>
+        <p>建立五维度系统化尽调分析框架，学会看透业绩曲线背后的真相，掌握规模与收益的博弈逻辑</p>
+    </div>
+</section>
+
+<div class="content">
+
+    <!-- ═══════ Section 1: 五维度分析法 ═══════ -->
+    <div class="section">
+        <div class="section-label">Chapter 5.1</div>
+        <h2 class="section-title">尽调框架：五维度分析法</h2>
+        <p class="section-desc">
+            评估量化基金经理不能只看业绩数字。一个成熟的尽调框架应从团队、策略、IT、风控、治理五个维度全面评估管理人的综合实力。这五个维度可以用雷达图直观呈现，任何一个维度的明显短板都可能成为未来风险的来源。
+        </p>
+
+        <!-- Radar Chart SVG -->
+        <div class="card">
+            <h3 class="sub">五维度雷达图示意</h3>
+            <div class="radar-container">
+                <div class="radar-svg-wrap">
+                    <svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background pentagons -->
+                        <polygon points="160,40 268,118 227,244 93,244 52,118" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+                        <polygon points="160,70 244,131 212,228 108,228 76,131" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+                        <polygon points="160,100 220,144 197,212 123,212 100,144" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+                        <polygon points="160,130 196,157 182,196 138,196 124,157" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+                        <!-- Axes -->
+                        <line x1="160" y1="40" x2="160" y2="280" stroke="#e2e8f0" stroke-width="1"/>
+                        <line x1="52" y1="118" x2="268" y2="244" stroke="#e2e8f0" stroke-width="1"/>
+                        <line x1="268" y1="118" x2="52" y2="244" stroke="#e2e8f0" stroke-width="1"/>
+                        <!-- Ideal shape (dashed) -->
+                        <polygon points="160,55 256,124 218,238 102,238 64,124" fill="rgba(102,126,234,0.06)" stroke="rgba(102,126,234,0.3)" stroke-width="1.5" stroke-dasharray="6,4"/>
+                        <!-- Actual shape (solid) -->
+                        <polygon points="160,65 248,128 210,235 110,225 70,130" fill="rgba(118,75,162,0.08)" stroke="url(#grad1)" stroke-width="2.5"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea"/>
+                                <stop offset="100%" style="stop-color:#764ba2"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Data points -->
+                        <circle cx="160" cy="65" r="4" fill="#667eea"/>
+                        <circle cx="248" cy="128" r="4" fill="#667eea"/>
+                        <circle cx="210" cy="235" r="4" fill="#667eea"/>
+                        <circle cx="110" cy="225" r="4" fill="#667eea"/>
+                        <circle cx="70" cy="130" r="4" fill="#667eea"/>
+                        <!-- Labels -->
+                        <text x="160" y="28" text-anchor="middle" fill="#0f172a" font-size="13" font-weight="600" font-family="'Noto Sans SC'">团队实力</text>
+                        <text x="282" y="122" text-anchor="start" fill="#0f172a" font-size="13" font-weight="600" font-family="'Noto Sans SC'">策略能力</text>
+                        <text x="234" y="264" text-anchor="start" fill="#0f172a" font-size="13" font-weight="600" font-family="'Noto Sans SC'">IT基础设施</text>
+                        <text x="86" y="264" text-anchor="end" fill="#0f172a" font-size="13" font-weight="600" font-family="'Noto Sans SC'">风控合规</text>
+                        <text x="38" y="122" text-anchor="end" fill="#0f172a" font-size="13" font-weight="600" font-family="'Noto Sans SC'">公司治理</text>
+                    </svg>
+                </div>
+                <div class="radar-legend">
+                    <div class="radar-legend-item">
+                        <div class="radar-legend-dot" style="background:linear-gradient(135deg,#667eea,#764ba2)"></div>
+                        <span>实线 = 管理人实际评估得分</span>
+                    </div>
+                    <div class="radar-legend-item">
+                        <div class="radar-legend-dot" style="background:rgba(102,126,234,0.3);border:1.5px dashed #667eea"></div>
+                        <span>虚线 = 理想标准参考线</span>
+                    </div>
+                    <div style="font-size:13px;color:var(--muted);margin-top:12px;line-height:1.7;">
+                        雷达图越接近正五边形越好。某一维度明显凹陷意味着该方面存在短板，需要在尽调中重点关注。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dimension 1: 团队实力 -->
+        <div class="card">
+            <h3 class="sub">维度一：团队实力</h3>
+            <ul class="bullet-list">
+                <li><strong>创始人背景</strong>：学历、从业年限、是否穿越牛熊周期
+                    <span class="sub-note">穿越牛熊经验意味着管理人在极端市场环境下仍能保持策略有效性</span>
+                </li>
+                <li><strong>团队规模</strong>：投研人数、IT人数（IT:投研比很重要，反映技术投入）
+                    <span class="sub-note">IT人数与投研人数的比值是量化机构技术实力的核心指标之一</span>
+                </li>
+                <li><strong>学历构成</strong>：是否来自顶尖学府
+                </li>
+                <li><strong>团队稳定性</strong>：核心人员流失率
+                    <span class="sub-note">高频的核心人员离职可能意味着治理问题或策略分歧</span>
+                </li>
+            </ul>
+
+            <h4 style="font-size:14px;font-weight:700;color:var(--ink);margin:20px 0 12px;">实际案例对比</h4>
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>公司</th>
+                            <th>创始人</th>
+                            <th>团队规模</th>
+                            <th>核心投研年限</th>
+                            <th>学历背景</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="company-name">九坤</td>
+                            <td>姚齐聪(清华姚班)<br>+王琛(北大数院)</td>
+                            <td>350+人</td>
+                            <td>13年+</td>
+                            <td>清北顶配</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">进化论</td>
+                            <td>王一平<br>19年投资经验</td>
+                            <td>50+人</td>
+                            <td>10年+</td>
+                            <td>多元化</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">顽岩</td>
+                            <td>13年投资经验</td>
+                            <td>100+人</td>
+                            <td>9年(平均)</td>
+                            <td>国内外名校</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">悦海盈和</td>
+                            <td>王志台(人大/上财)<br>+张萌(北大/普林斯顿博士)</td>
+                            <td>36+人</td>
+                            <td>10年+</td>
+                            <td>北大/普林斯顿/清华</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">玉数</td>
+                            <td>赵俊辰(复旦/牛津)<br>+袁楠(中科院博士)</td>
+                            <td>~20人</td>
+                            <td>海外经验</td>
+                            <td>牛津/复旦/中科院</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Dimension 2: 策略能力 -->
+        <div class="card">
+            <h3 class="sub">维度二：策略能力</h3>
+            <ul class="bullet-list">
+                <li><strong>因子体系</strong>：因子数量、类型、更新频率</li>
+                <li><strong>超额来源多样性</strong>：是否依赖单一因子或单一策略</li>
+                <li><strong>策略迭代能力</strong>：模型更新频率，应对市场变化的速度</li>
+                <li><strong>策略容量</strong>：当前规模 vs 策略容量上限</li>
+            </ul>
+
+            <h4 style="font-size:14px;font-weight:700;color:var(--ink);margin:20px 0 12px;">实际案例</h4>
+            <div class="case-grid">
+                <div class="case-card">
+                    <div class="case-card-header">
+                        <div class="case-card-logo">顽</div>
+                        <div class="case-card-name">顽岩</div>
+                    </div>
+                    <p>量价因子占比 <strong>90%</strong>，基本面因子 <strong>10%</strong></p>
+                    <p>拥有 <strong>10000+</strong> 特征，持仓 <strong>1500+</strong> 只股票</p>
+                    <p>采用流水线模式运作</p>
+                    <div style="margin-top:8px;">
+                        <span class="tag">量价为主</span>
+                        <span class="tag">高特征数</span>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-card-header">
+                        <div class="case-card-logo">进</div>
+                        <div class="case-card-name">进化论</div>
+                    </div>
+                    <p>逻辑类因子特色，区别于传统量价因子</p>
+                    <p>与其他百亿量化私募的超额相关性<strong>显著偏低</strong></p>
+                    <p>差异化竞争策略</p>
+                    <div style="margin-top:8px;">
+                        <span class="tag">逻辑因子</span>
+                        <span class="tag">低相关性</span>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-card-header">
+                        <div class="case-card-logo">九</div>
+                        <div class="case-card-name">九坤</div>
+                    </div>
+                    <p>分布式投研架构</p>
+                    <p>多元化化学科背景：天体物理、心理学、汽车工程等</p>
+                    <p>跨学科融合创新</p>
+                    <div style="margin-top:8px;">
+                        <span class="tag">分布式</span>
+                        <span class="tag">跨学科</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dimension 3: IT基础设施 -->
+        <div class="card">
+            <h3 class="sub">维度三：IT基础设施</h3>
+            <ul class="bullet-list">
+                <li><strong>算力</strong>：GPU/CPU规模，存储容量</li>
+                <li><strong>交易系统</strong>：自研 vs 外购，延迟水平</li>
+                <li><strong>灾备</strong>：多机房、双系统备份</li>
+                <li><strong>数据</strong>：数据源数量和质量</li>
+            </ul>
+
+            <h4 style="font-size:14px;font-weight:700;color:var(--ink);margin:20px 0 12px;">实际案例</h4>
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>机构</th>
+                            <th>存储规模</th>
+                            <th>网络带宽</th>
+                            <th>延迟水平</th>
+                            <th>架构特色</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="company-name">九坤</td>
+                            <td>100PB+</td>
+                            <td>500Gbps专线</td>
+                            <td>纳秒级</td>
+                            <td>三层资源池架构</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">顽岩</td>
+                            <td>GPU储备充足</td>
+                            <td>多线路</td>
+                            <td>低延迟</td>
+                            <td>自研交易系统<br>IT:投研 = 1:1</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">玉数</td>
+                            <td>PB级数据</td>
+                            <td>多条专线</td>
+                            <td>微秒-纳秒级</td>
+                            <td>超低延迟交易系统</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="highlight-box">
+                <h4>关键指标：IT:投研比</h4>
+                <p>IT人员与投研人员的比值直接反映机构对技术基础设施的投入力度。顶级量化机构的 IT:投研比通常在 <strong>0.8:1</strong> 到 <strong>1.2:1</strong> 之间。如果比值低于 0.5:1，说明技术投入可能不足。</p>
+            </div>
+        </div>
+
+        <!-- Dimension 4: 风控合规 -->
+        <div class="card">
+            <h3 class="sub">维度四：风控合规</h3>
+            <ul class="bullet-list">
+                <li><strong>风控体系完备性</strong>：事前 + 事中 + 事后</li>
+                <li><strong>历史回撤修复能力</strong>：最大回撤后多久修复</li>
+                <li><strong>风控参数</strong>：具体约束指标</li>
+                <li><strong>监管合规</strong>：是否有违规记录</li>
+            </ul>
+
+            <div class="compare-strip">
+                <div class="compare-item">
+                    <div class="label">事前风控</div>
+                    <div class="value">&#9312;</div>
+                    <div class="note">策略上线前审查</div>
+                </div>
+                <div class="compare-item">
+                    <div class="label">事中风控</div>
+                    <div class="value">&#9313;</div>
+                    <div class="note">实时监控交易</div>
+                </div>
+                <div class="compare-item">
+                    <div class="label">事后风控</div>
+                    <div class="value">&#9314;</div>
+                    <div class="note">归因分析与复盘</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dimension 5: 公司治理 -->
+        <div class="card">
+            <h3 class="sub">维度五：公司治理</h3>
+            <ul class="bullet-list">
+                <li><strong>股权结构</strong>：是否清晰，是否稳定</li>
+                <li><strong>激励机制</strong>：短期、中期、长期激励制度</li>
+                <li><strong>规模管理</strong>：是否审慎控制规模</li>
+                <li><strong>产品线布局</strong>：策略覆盖广度</li>
+            </ul>
+
+            <div class="tip-box">
+                <div class="tip-icon">&#9888;</div>
+                <div>
+                    <p><strong>治理风险警示信号：</strong>股权过于集中或频繁变动、核心人员离职潮、短期内规模暴增但缺乏对应投研扩编、产品线过于单一或过于分散。这些都可能预示着潜在的治理问题。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ Section 2: 业绩曲线 ═══════ -->
+    <div class="section">
+        <div class="section-label">Chapter 5.2</div>
+        <h2 class="section-title">如何看业绩曲线</h2>
+        <p class="section-desc">
+            业绩曲线是评估基金经理最直观的工具，但大多数投资者在看业绩曲线时容易陷入几个常见误区。以下六个原则将帮助你正确解读业绩曲线。
+        </p>
+
+        <div class="card">
+            <ul class="bullet-list" style="margin-bottom:0;">
+                <li><strong>不要只看绝对收益曲线，要看超额收益曲线</strong>
+                    <span class="sub-note">绝对收益曲线可能被市场 beta 混淆，超额收益曲线才能反映管理人的真实 alpha 能力</span>
+                </li>
+                <li><strong>超额曲线的稳定性比斜率更重要</strong>
+                    <span class="sub-note">一条陡峭但波动剧烈的超额曲线，不如一条稳步向上的曲线可靠</span>
+                </li>
+                <li><strong>超额曲线应该平稳向上，不应有大起大落</strong>
+                    <span class="sub-note">大起大落可能意味着策略在某些市场环境下失效，稳定性是可持续 alpha 的核心特征</span>
+                </li>
+                <li><strong>关注回撤修复速度，而非仅看最大回撤</strong>
+                    <span class="sub-note">最大回撤相同的两个管理人，修复速度快的说明策略弹性更强</span>
+                </li>
+                <li><strong>样本期：至少3年以上的实盘数据才有参考价值</strong>
+                    <span class="sub-note">短于3年的业绩可能无法覆盖完整的市场周期，存在幸存者偏差</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Performance Chart SVG -->
+        <div class="curve-container">
+            <h4>超额收益曲线示例：进化论策略升级前后对比</h4>
+            <svg width="100%" height="280" viewBox="0 0 800 280" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                <!-- Grid -->
+                <line x1="80" y1="20" x2="80" y2="240" stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="80" y1="240" x2="760" y2="240" stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="80" y1="150" x2="760" y2="150" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="4,4"/>
+                <line x1="80" y1="80" x2="760" y2="80" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="4,4"/>
+                <!-- Y-axis labels -->
+                <text x="70" y="244" text-anchor="end" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">0%</text>
+                <text x="70" y="154" text-anchor="end" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">10%</text>
+                <text x="70" y="84" text-anchor="end" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">20%</text>
+                <text x="70" y="24" text-anchor="end" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">30%</text>
+                <!-- X-axis labels -->
+                <text x="120" y="260" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">2022Q1</text>
+                <text x="230" y="260" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">2022Q3</text>
+                <text x="340" y="260" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">2023Q1</text>
+                <text x="450" y="260" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">2023Q3</text>
+                <text x="560" y="260" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">2024Q1</text>
+                <text x="680" y="260" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="'Noto Sans SC'">2024Q3</text>
+                <!-- Upgrade line -->
+                <line x1="420" y1="20" x2="420" y2="240" stroke="#f59e0b" stroke-width="1" stroke-dasharray="6,4"/>
+                <text x="424" y="32" fill="#f59e0b" font-size="11" font-weight="600" font-family="'Noto Sans SC'">策略升级</text>
+                <!-- Before upgrade curve (gray) -->
+                <polyline
+                    points="100,210 140,195 180,200 220,180 260,175 300,185 340,170 380,160 420,155"
+                    fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- After upgrade curve (gradient) -->
+                <polyline
+                    points="420,155 460,140 500,120 540,95 580,80 620,65 660,50 700,40 740,30"
+                    fill="none" stroke="url(#curveGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                    <linearGradient id="curveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#667eea"/>
+                        <stop offset="100%" style="stop-color:#764ba2"/>
+                    </linearGradient>
+                </defs>
+                <!-- Area under curve after upgrade -->
+                <polygon
+                    points="420,155 460,140 500,120 540,95 580,80 620,65 660,50 700,40 740,30 740,240 420,240"
+                    fill="url(#areaGrad)" opacity="0.5"/>
+                <defs>
+                    <linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgba(102,126,234,0.15)"/>
+                        <stop offset="100%" style="stop-color:rgba(102,126,234,0.01)"/>
+                    </linearGradient>
+                </defs>
+                <!-- Dots -->
+                <circle cx="420" cy="155" r="4" fill="#f59e0b"/>
+                <circle cx="740" cy="30" r="4" fill="#764ba2"/>
+                <!-- Legend -->
+                <line x1="580" y1="12" x2="600" y2="12" stroke="#94a3b8" stroke-width="2"/>
+                <text x="606" y="16" fill="#64748b" font-size="11" font-family="'Noto Sans SC'">升级前</text>
+                <line x1="660" y1="12" x2="680" y2="12" stroke="#667eea" stroke-width="2.5"/>
+                <text x="686" y="16" fill="#64748b" font-size="11" font-family="'Noto Sans SC'">升级后</text>
+            </svg>
+        </div>
+
+        <div class="tip-box">
+            <div class="tip-icon">&#128161;</div>
+            <div>
+                <p><strong>实战要点：</strong>2023年下半年，进化论完成策略升级后，超额收益曲线斜率明显提升且波动降低。这说明管理人具备策略迭代能力，能够在市场环境变化后主动调整，是尽调中的积极信号。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ Section 3: 规模与收益 ═══════ -->
+    <div class="section">
+        <div class="section-label">Chapter 5.3</div>
+        <h2 class="section-title">规模与收益的博弈</h2>
+        <p class="section-desc">
+            规模是超额收益的敌人。随着管理规模的增长，冲击成本上升、策略拥挤度增加，超额收益必然承压。因此，评估管理人时必须关注其对规模的态度和管控能力。
+        </p>
+
+        <div class="card">
+            <h3 class="sub">核心矛盾</h3>
+            <ul class="bullet-list">
+                <li><strong>规模越大，超额越难做</strong>：冲击成本、市场容量、拥挤度三重压力</li>
+                <li><strong>关注管理人的规模控制态度</strong>：是否主动封盘或限制申购</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h4>九坤的规模理念</h4>
+                <p style="font-style:italic;">"不断使基金管理规模增长与业绩发展、风控合规等综合能力相匹配"</p>
+                <p style="margin-top:8px;font-size:13px;color:var(--muted);">这代表了一种审慎的规模管理理念——在能力提升的前提下有序扩张，而非盲目追求规模。</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="sub">不同策略的容量上限</h3>
+            <p style="font-size:14px;color:var(--slate);margin-bottom:16px;">
+                策略类型直接决定了管理规模的天花板。换手率越高、持仓越集中的策略，容量越小。
+            </p>
+
+            <div class="capacity-bars">
+                <div class="capacity-row">
+                    <div class="capacity-label">T0策略</div>
+                    <div class="capacity-track">
+                        <div class="capacity-fill t0">几十亿</div>
+                    </div>
+                </div>
+                <div class="capacity-row">
+                    <div class="capacity-label">高频指增</div>
+                    <div class="capacity-track">
+                        <div class="capacity-fill hf">百亿级</div>
+                    </div>
+                </div>
+                <div class="capacity-row">
+                    <div class="capacity-label">中低频指增</div>
+                    <div class="capacity-track">
+                        <div class="capacity-fill mid">数百亿</div>
+                    </div>
+                </div>
+                <div class="capacity-row">
+                    <div class="capacity-label">量化选股</div>
+                    <div class="capacity-track">
+                        <div class="capacity-fill qa">最大容量</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:16px;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+                    <div style="width:12px;height:12px;border-radius:3px;background:linear-gradient(90deg,#f59e0b,#f97316);"></div>
+                    容量最小
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+                    <div style="width:12px;height:12px;border-radius:3px;background:linear-gradient(90deg,var(--accent),#8b5cf6);"></div>
+                    容量中等
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+                    <div style="width:12px;height:12px;border-radius:3px;background:linear-gradient(90deg,#6366f1,var(--accent-deep));"></div>
+                    容量较大
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
+                    <div style="width:12px;height:12px;border-radius:3px;background:linear-gradient(90deg,var(--accent-deep),#7c3aed);"></div>
+                    容量最大
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ Section 4: 产品选择实操 ═══════ -->
+    <div class="section">
+        <div class="section-label">Chapter 5.4</div>
+        <h2 class="section-title">产品选择实操</h2>
+        <p class="section-desc">
+            同一管理人往往有多个同策略产品在运行。在确认策略一致后，选择具体产品时仍有几个关键因素需要考量。
+        </p>
+
+        <div class="card">
+            <h3 class="sub">同策略多产品选择原则</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <h4>优先选择运作时间最长的代表产品</h4>
+                        <p>运作时间越长，可供验证的业绩数据越多，越能反映策略的真实表现</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <h4>关注产品规模</h4>
+                        <p>太大可能影响策略执行效率，太小可能导致运营成本分摊过高、流动性不足</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <h4>确认费率结构是否一致</h4>
+                        <p>同策略不同产品的费率可能不同，直接影响投资者实际到手收益</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <h4>核实业绩数据来源</h4>
+                        <p>托管复核数据 > 管理人自报数据。托管行出具的报告更具公信力</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="sub">产品要素表关键字段</h3>
+            <p style="font-size:14px;color:var(--slate);margin-bottom:16px;">
+                阅读产品要素表时，以下字段需要重点关注：
+            </p>
+            <div class="field-grid">
+                <div class="field-item">
+                    <div class="field-label">管理费率</div>
+                    <div class="field-value">1-2%</div>
+                    <div class="field-note">通常年化管理费</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">业绩报酬</div>
+                    <div class="field-value">20%</div>
+                    <div class="field-note">通常为超额部分</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">封闭期</div>
+                    <div class="field-value">6-12个月</div>
+                    <div class="field-note">新设产品常见</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">开放日</div>
+                    <div class="field-value">月度/季度</div>
+                    <div class="field-note">申购赎回频率</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">预警线</div>
+                    <div class="field-value">0.85-0.90</div>
+                    <div class="field-note">净值触及后减仓</div>
+                </div>
+                <div class="field-item">
+                    <div class="field-label">止损线</div>
+                    <div class="field-value">0.80-0.85</div>
+                    <div class="field-note">净值触及后清仓</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ Section 5: 尽调问题清单 ═══════ -->
+    <div class="section">
+        <div class="section-label">Chapter 5.5</div>
+        <h2 class="section-title">尽调问题清单</h2>
+        <p class="section-desc">
+            以下是20个尽调必问问题，按五个维度分类。在实际尽调中，这些问题可以作为标准化的访谈提纲，确保覆盖所有关键方面。
+        </p>
+
+        <!-- Team -->
+        <div class="checklist-group">
+            <h4><span class="num-badge">1</span>团队类问题（4个）</h4>
+            <div class="card" style="margin-bottom:0;">
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>核心人员的稳定性如何？近三年是否有重要人员离职？离职原因是什么？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>投研团队的日常工作流程是怎样的？从因子研发到策略上线的周期多长？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>核心投研人员的流失率是多少？是否有竞业限制和知识产权保护措施？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>团队的激励机制是怎样的？短期、中期、长期激励如何搭配？</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Strategy -->
+        <div class="checklist-group">
+            <h4><span class="num-badge">2</span>策略类问题（4个）</h4>
+            <div class="card" style="margin-bottom:0;">
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>超额收益的主要来源是什么？各个因子的贡献占比如何？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>因子体系的构成是什么？有多少个因子？更新频率如何？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>当前策略的换手率水平？在不同市场环境下换手率如何变化？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>策略容量上限是多少？当前管理规模距离上限还有多大空间？</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- IT -->
+        <div class="checklist-group">
+            <h4><span class="num-badge">3</span>IT类问题（4个）</h4>
+            <div class="card" style="margin-bottom:0;">
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>交易系统是自研还是外购？自研系统有什么独特优势？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>算力规模如何？有多少GPU/CPU资源？存储容量有多大？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>使用了哪些数据源？数据清洗和质量控制的流程是怎样的？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>灾备方案是怎样的？是否有双机房备份？极端情况下的业务连续性如何保障？</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Risk Control -->
+        <div class="checklist-group">
+            <h4><span class="num-badge">4</span>风控类问题（4个）</h4>
+            <div class="card" style="margin-bottom:0;">
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>具体的风控参数有哪些？个股集中度、行业偏离度、换手率上限分别是多少？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>历史上最大回撤的应对措施是什么？多久完成修复？复盘后的改进措施有哪些？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>在2015年股灾、2020年疫情等极端行情中的表现如何？当时采取了什么措施？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>是否有监管违规记录？如有，具体情况和整改措施是什么？</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Company -->
+        <div class="checklist-group">
+            <h4><span class="num-badge">5</span>公司类问题（4个）</h4>
+            <div class="card" style="margin-bottom:0;">
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>股权结构是否清晰稳定？核心团队的持股比例如何？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>未来12个月的规模规划是怎样的？是否有封盘或限购计划？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>产品线布局的策略覆盖范围？是否有 CTA、中性等不同策略线？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div>如何防范不同产品之间的利益冲突？公平交易制度如何执行？</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tip-box" style="margin-top:24px;">
+            <div class="tip-icon">&#128203;</div>
+            <div>
+                <p><strong>尽调建议：</strong>建议在尽调前将以上20个问题打印为清单，逐项记录管理人的回答。重点关注回答的<strong>具体性和可验证性</strong>——含糊的回答本身就是一种信号。同时，交叉验证不同维度信息的一致性，如策略容量与规模管理是否匹配、团队规模与IT投入是否匹配等。</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Prev/Next Navigation -->
+<div class="page-nav">
+    <a href="04-风险管理.html">
+        <div class="nav-dir">&#8592; 上一章</div>
+        <div class="nav-title">风险管理</div>
+    </a>
+    <a href="06-机构图谱.html" class="next">
+        <div class="nav-dir">下一章 &#8594;</div>
+        <div class="nav-title">机构图谱</div>
+    </a>
+</div>
+
+<footer>
+    <p>量化基金投资系统培训教程 · 仅供内部学习参考 · 不构成任何投资建议</p>
+</footer>
+
+</body>
+</html>

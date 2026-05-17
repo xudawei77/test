@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>策略全景图 — 量化基金投资培训教程</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --ink: #0f172a;
+            --slate: #334155;
+            --muted: #64748b;
+            --silver: #94a3b8;
+            --fog: #e2e8f0;
+            --snow: #f8fafc;
+            --accent: #667eea;
+            --accent-deep: #764ba2;
+            --accent-glow: rgba(102, 126, 234, 0.15);
+            --warm: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --teal: #14b8a6;
+            --orange: #f97316;
+            --pink: #ec4899;
+            --card-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.04);
+            --card-shadow-hover: 0 4px 12px rgba(102,126,234,0.12), 0 16px 48px rgba(15,23,42,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--ink);
+            background: var(--snow);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(248,250,252,0.85);
+            backdrop-filter: blur(16px) saturate(1.4);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px; height: 56px;
+        }
+        .nav-brand {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700; font-size: 16px; color: var(--ink);
+            letter-spacing: 0.02em;
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 6px; }
+        .nav-links a {
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            text-decoration: none; padding: 6px 12px; border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); background: var(--accent-glow); }
+        .nav-links a.active {
+            color: white; background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            font-weight: 600;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            position: relative;
+            min-height: 380px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            padding: 100px 32px 60px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 40%, rgba(102,126,234,0.08), transparent),
+                radial-gradient(ellipse 70% 50% at 80% 60%, rgba(118,75,162,0.06), transparent),
+                linear-gradient(180deg, var(--snow) 0%, #f1f5f9 100%);
+        }
+        .hero-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(102,126,234,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102,126,234,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
+        }
+        .hero-content {
+            position: relative; text-align: center; max-width: 720px;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+            color: var(--accent); text-transform: uppercase;
+            background: var(--accent-glow);
+            padding: 6px 16px; border-radius: 100px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(102,126,234,0.12);
+        }
+        .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+        .hero h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(28px, 4.5vw, 48px);
+            font-weight: 900; line-height: 1.2;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 17px; color: var(--muted); line-height: 1.8;
+            max-width: 560px; margin: 0 auto;
+        }
+
+        /* ── Strategy Overview Strip ── */
+        .strategy-strip {
+            max-width: 1200px; margin: -24px auto 0; padding: 0 32px;
+            position: relative; z-index: 2;
+        }
+        .strip-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 40px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+            text-align: center;
+        }
+        .strip-item {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            padding: 12px 8px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+        .strip-item:hover { background: var(--accent-glow); }
+        .strip-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .strip-label {
+            font-size: 12px; font-weight: 600; color: var(--slate);
+            line-height: 1.4;
+        }
+
+        /* ── Main Content ── */
+        .content {
+            max-width: 1200px; margin: 0 auto;
+            padding: 48px 32px 32px;
+        }
+
+        /* ── Section ── */
+        .section {
+            margin-bottom: 64px;
+            opacity: 0; transform: translateY(20px);
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        .section-header {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 28px;
+        }
+        .section-number {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 13px; font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 24px; font-weight: 700; color: var(--ink);
+            line-height: 1.3;
+        }
+
+        /* ── Strategy Card ── */
+        .strategy-card {
+            background: white;
+            border-radius: 16px;
+            padding: 36px 40px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.3s;
+        }
+        .strategy-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.12);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.06), rgba(118,75,162,0.04));
+            border-left: 4px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+        .concept-box .label {
+            font-size: 11px; font-weight: 700; color: var(--accent);
+            letter-spacing: 0.06em; text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .concept-box p {
+            font-size: 15px; color: var(--slate); line-height: 1.7;
+        }
+
+        /* ── Formula ── */
+        .formula {
+            background: #f8fafc;
+            border: 1px solid var(--fog);
+            border-radius: 10px;
+            padding: 16px 24px;
+            margin: 16px 0;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 16px; font-weight: 600;
+            color: var(--ink);
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+        .formula .op { color: var(--accent); }
+        .formula .var { color: var(--accent-deep); }
+
+        /* ── Data Callout ── */
+        .data-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+        .data-callout {
+            background: white;
+            border: 1px solid var(--fog);
+            border-radius: 12px;
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .data-callout::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        }
+        .data-callout.blue::before { background: var(--blue); }
+        .data-callout.green::before { background: var(--green); }
+        .data-callout.orange::before { background: var(--orange); }
+        .data-callout.pink::before { background: var(--pink); }
+        .data-callout.teal::before { background: var(--teal); }
+        .data-callout .dc-label {
+            font-size: 11px; font-weight: 600; color: var(--muted);
+            letter-spacing: 0.04em; margin-bottom: 6px;
+        }
+        .data-callout .dc-value {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 22px; font-weight: 700; color: var(--ink);
+        }
+        .data-callout .dc-sub {
+            font-size: 12px; color: var(--silver); margin-top: 4px;
+        }
+
+        /* ── Comparison Table ── */
+        .compare-table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 12px;
+            border: 1px solid var(--fog);
+        }
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .compare-table thead th {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: white;
+            font-weight: 600;
+            padding: 14px 18px;
+            text-align: left;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+        .compare-table thead th:first-child { border-radius: 12px 0 0 0; }
+        .compare-table thead th:last-child { border-radius: 0 12px 0 0; }
+        .compare-table tbody td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--fog);
+            color: var(--slate);
+            vertical-align: top;
+        }
+        .compare-table tbody tr:last-child td { border-bottom: none; }
+        .compare-table tbody tr:hover { background: rgba(102,126,234,0.03); }
+        .compare-table tbody tr:nth-child(even) { background: #fafbfc; }
+        .compare-table tbody tr:nth-child(even):hover { background: rgba(102,126,234,0.05); }
+        .compare-table .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .tag-low { background: #dcfce7; color: #166534; }
+        .tag-mid { background: #fef3c7; color: #92400e; }
+        .tag-high { background: #fee2e2; color: #991b1b; }
+        .tag-neutral { background: #e0e7ff; color: #3730a3; }
+
+        /* ── Feature List ── */
+        .feature-list {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+        .feature-item {
+            display: flex; gap: 10px; align-items: flex-start;
+            padding: 12px 16px;
+            background: #fafbfc;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .feature-item .fi-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            margin-top: 6px; flex-shrink: 0;
+        }
+        .feature-item .fi-text {
+            font-size: 14px; color: var(--slate); line-height: 1.6;
+        }
+
+        /* ── Suitable Box ── */
+        .suitable-box {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(20,184,166,0.04));
+            border: 1px solid rgba(16,185,129,0.12);
+            border-radius: 12px;
+            margin-top: 24px;
+        }
+        .suitable-box .sb-icon {
+            font-size: 22px; flex-shrink: 0;
+        }
+        .suitable-box .sb-text {
+            font-size: 14px; color: var(--slate);
+        }
+        .suitable-box .sb-text strong {
+            color: #065f46;
+        }
+
+        /* ── Hedge Types ── */
+        .hedge-types {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+            margin: 16px 0;
+        }
+        .hedge-card {
+            padding: 20px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--fog);
+        }
+        .hedge-card .hc-title {
+            font-size: 15px; font-weight: 700; color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .hedge-card .hc-desc {
+            font-size: 13px; color: var(--muted); line-height: 1.6;
+        }
+
+        /* ── Attack-Defend ── */
+        .ad-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+            margin: 16px 0;
+        }
+        .ad-card {
+            padding: 20px 24px;
+            border-radius: 12px;
+        }
+        .ad-card.attack {
+            background: linear-gradient(135deg, rgba(249,115,22,0.06), rgba(239,68,68,0.03));
+            border: 1px solid rgba(249,115,22,0.12);
+        }
+        .ad-card.defend {
+            background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(16,185,129,0.03));
+            border: 1px solid rgba(59,130,246,0.12);
+        }
+        .ad-card .ad-label {
+            font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+        .ad-card.attack .ad-label { color: var(--orange); }
+        .ad-card.defend .ad-label { color: var(--blue); }
+        .ad-card .ad-title {
+            font-size: 15px; font-weight: 700; color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .ad-card .ad-desc {
+            font-size: 13px; color: var(--muted); line-height: 1.6;
+        }
+
+        /* ── Strategy Sub-items ── */
+        .sub-list {
+            list-style: none;
+            margin: 12px 0;
+        }
+        .sub-list li {
+            display: flex; gap: 10px; align-items: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            font-size: 14px; color: var(--slate); line-height: 1.6;
+        }
+        .sub-list li:last-child { border-bottom: none; }
+        .sub-list li .sl-num {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 12px; font-weight: 700;
+            color: var(--accent); flex-shrink: 0;
+            width: 24px; height: 24px;
+            background: var(--accent-glow);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ── Master Comparison Matrix ── */
+        .matrix-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 12px;
+            border: 1px solid var(--fog);
+        }
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 800px;
+        }
+        .matrix-table thead th {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: white;
+            font-weight: 600;
+            padding: 14px 14px;
+            text-align: center;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+        .matrix-table thead th:first-child {
+            text-align: left;
+            border-radius: 12px 0 0 0;
+        }
+        .matrix-table thead th:last-child { border-radius: 0 12px 0 0; }
+        .matrix-table tbody td {
+            padding: 13px 14px;
+            border-bottom: 1px solid var(--fog);
+            color: var(--slate);
+            text-align: center;
+            vertical-align: middle;
+            font-size: 12px;
+        }
+        .matrix-table tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: var(--ink);
+            font-size: 13px;
+        }
+        .matrix-table tbody tr:last-child td { border-bottom: none; }
+        .matrix-table tbody tr:hover { background: rgba(102,126,234,0.03); }
+
+        /* ── Chapter Navigation ── */
+        .chapter-nav {
+            max-width: 1200px; margin: 0 auto;
+            padding: 40px 32px 64px;
+            display: flex; justify-content: space-between; gap: 20px;
+        }
+        .ch-nav-btn {
+            display: flex; align-items: center; gap: 12px;
+            padding: 20px 28px;
+            background: white;
+            border-radius: 14px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            flex: 1;
+            max-width: 340px;
+        }
+        .ch-nav-btn:hover {
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.15);
+            transform: translateY(-2px);
+        }
+        .ch-nav-btn .cnb-arrow {
+            font-size: 20px; color: var(--accent); flex-shrink: 0;
+        }
+        .ch-nav-btn .cnb-info {}
+        .ch-nav-btn .cnb-label {
+            font-size: 11px; font-weight: 600; color: var(--muted);
+            letter-spacing: 0.04em;
+        }
+        .ch-nav-btn .cnb-title {
+            font-size: 15px; font-weight: 700; color: var(--ink);
+            margin-top: 2px;
+        }
+        .ch-nav-btn.next { margin-left: auto; text-align: right; flex-direction: row-reverse; }
+
+        /* ── Footer ── */
+        footer {
+            max-width: 1200px; margin: 0 auto; padding: 32px;
+            border-top: 1px solid var(--fog);
+            text-align: center;
+        }
+        footer p { font-size: 12px; color: var(--silver); }
+
+        /* ── Animations ── */
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        .section:nth-child(1) { animation-delay: 0.05s; }
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.15s; }
+        .section:nth-child(4) { animation-delay: 0.2s; }
+        .section:nth-child(5) { animation-delay: 0.25s; }
+        .section:nth-child(6) { animation-delay: 0.3s; }
+        .section:nth-child(7) { animation-delay: 0.35s; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { min-height: 320px; padding: 100px 20px 40px; }
+            .strip-card { grid-template-columns: repeat(3, 1fr); padding: 24px 20px; }
+            .content { padding: 32px 20px; }
+            .strategy-card { padding: 24px 20px; }
+            .hedge-types, .ad-grid { grid-template-columns: 1fr; }
+            .chapter-nav { flex-direction: column; padding: 32px 20px 48px; }
+            .ch-nav-btn, .ch-nav-btn.next { max-width: 100%; }
+        }
+
+        @media print {
+            nav { position: static; border: none; }
+            .hero { min-height: auto; padding: 20px; }
+            .hero::before, .hero-grid { display: none; }
+            .strategy-card { box-shadow: none; break-inside: avoid; }
+            .chapter-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+    <div class="nav-inner">
+        <a href="index.html" class="nav-brand">量化基金培训</a>
+        <div class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="01-量化投资基础.html">基础原理</a>
+            <a href="02-策略全景图.html" class="active">策略全景</a>
+            <a href="03-因子与模型.html">因子模型</a>
+            <a href="04-风险管理.html">风险管理</a>
+            <a href="05-基金经理评估.html">经理评估</a>
+            <a href="06-机构图谱.html">机构图谱</a>
+            <a href="07-配置框架.html">配置框架</a>
+            <a href="08-案例实战.html">案例实战</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+        <div class="hero-badge">Chapter 02 · 策略全景图</div>
+        <h1>A 股量化投资<br><em>六大核心策略</em></h1>
+        <p>系统梳理指数增强、量化选股、市场中性、灵活对冲、CTA 管理期货、T0 日内交易六大策略，用真实数据理解每种策略的收益来源、风险特征与适用场景</p>
+    </div>
+</section>
+
+<!-- Strategy Strip -->
+<div class="strategy-strip">
+    <div class="strip-card">
+        <div class="strip-item">
+            <div class="strip-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">&#128200;</div>
+            <div class="strip-label">指数增强</div>
+        </div>
+        <div class="strip-item">
+            <div class="strip-icon" style="background:rgba(102,126,234,0.1);color:#667eea;">&#127919;</div>
+            <div class="strip-label">量化选股</div>
+        </div>
+        <div class="strip-item">
+            <div class="strip-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">&#9878;</div>
+            <div class="strip-label">市场中性</div>
+        </div>
+        <div class="strip-item">
+            <div class="strip-icon" style="background:rgba(249,115,22,0.1);color:#f97316;">&#9881;</div>
+            <div class="strip-label">灵活对冲</div>
+        </div>
+        <div class="strip-item">
+            <div class="strip-icon" style="background:rgba(236,72,153,0.1);color:#ec4899;">&#128202;</div>
+            <div class="strip-label">CTA 期货</div>
+        </div>
+        <div class="strip-item">
+            <div class="strip-icon" style="background:rgba(20,184,166,0.1);color:#14b8a6;">&#9889;</div>
+            <div class="strip-label">T0 日内</div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+
+    <!-- Section 1: Index Enhancement -->
+    <div class="section" id="index-enhance">
+        <div class="section-header">
+            <div class="section-number">01</div>
+            <h2 class="section-title">指数增强策略</h2>
+        </div>
+        <div class="strategy-card">
+            <div class="concept-box">
+                <div class="label">核心逻辑</div>
+                <p>跟踪基准指数（沪深 300 / 中证 500 / 中证 1000），在复制指数成分股的基础上，通过量化模型超配优质股票、低配劣质股票，力求跑赢指数获取超额收益。</p>
+            </div>
+
+            <div class="formula">
+                收益 = <span class="var">Beta</span>（指数涨跌） <span class="op">+</span> <span class="var">Alpha</span>（超额收益）
+            </div>
+
+            <div style="margin: 24px 0 0;">
+                <p style="font-size:15px; font-weight:600; color:var(--ink); margin-bottom:16px;">三大主流指数对比</p>
+                <div class="compare-table-wrap">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th>指数</th>
+                                <th>风格定位</th>
+                                <th>成分股</th>
+                                <th>波动水平</th>
+                                <th>超额难度</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:600; color:var(--blue);">沪深 300</td>
+                                <td>大盘蓝筹</td>
+                                <td>300 只</td>
+                                <td><span class="tag tag-low">较低</span></td>
+                                <td><span class="tag tag-high">较大</span></td>
+                                <td>定价效率高，超额获取较难</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:600; color:var(--accent);">中证 500</td>
+                                <td>中盘成长</td>
+                                <td>500 只</td>
+                                <td><span class="tag tag-mid">适中</span></td>
+                                <td><span class="tag tag-mid">适中</span></td>
+                                <td>超额空间与稳定性较均衡</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:600; color:var(--accent-deep);">中证 1000</td>
+                                <td>小盘股</td>
+                                <td>1000 只</td>
+                                <td><span class="tag tag-high">较高</span></td>
+                                <td><span class="tag tag-low">较小</span></td>
+                                <td>定价效率低，超额获取空间大</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <p style="font-size:15px; font-weight:600; color:var(--ink); margin: 24px 0 12px;">真实业绩参考</p>
+            <div class="data-grid">
+                <div class="data-callout blue">
+                    <div class="dc-label">九坤 · 中证 1000 指增</div>
+                    <div class="dc-value">9.23%</div>
+                    <div class="dc-sub">年化超额 | 最大回撤 -22.98%</div>
+                </div>
+                <div class="data-callout blue">
+                    <div class="dc-label">九坤 · 中证 500 指增</div>
+                    <div class="dc-value">6.17%</div>
+                    <div class="dc-sub">年化超额 | 最大回撤 -26.58%</div>
+                </div>
+                <div class="data-callout blue">
+                    <div class="dc-label">九坤 · 沪深 300 指增</div>
+                    <div class="dc-value">5.47%</div>
+                    <div class="dc-sub">年化超额 | 最大回撤 -19.97%</div>
+                </div>
+            </div>
+            <div style="font-size:13px; color:var(--muted); margin-top:8px; padding-left:4px;">
+                * 顽岩资产中证 500 指增成立于 2021 年 8 月，运行约 4.5 年，策略持续迭代中
+            </div>
+
+            <div class="suitable-box">
+                <div class="sb-icon">&#128065;</div>
+                <div class="sb-text"><strong>适合投资者：</strong>看好 A 股市场长期走势，愿意承担市场系统性波动，追求长期跑赢指数的投资者</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Quant Stock Picking -->
+    <div class="section" id="stock-picking">
+        <div class="section-header">
+            <div class="section-number">02</div>
+            <h2 class="section-title">量化选股 / 多头策略</h2>
+        </div>
+        <div class="strategy-card">
+            <div class="concept-box">
+                <div class="label">核心逻辑</div>
+                <p>不锚定任何指数，全市场选股。量化模型根据预测的个股未来收益选择股票组合，自由捕捉市场风格 Beta，追求绝对收益最大化。</p>
+            </div>
+
+            <div style="margin: 16px 0;">
+                <p style="font-size:14px; color:var(--slate); line-height:1.8; padding: 12px 16px; background:#fafbfc; border-radius:10px; border:1px solid rgba(0,0,0,0.03);">
+                    <strong style="color:var(--accent);">与指增的核心区别：</strong>没有跟踪误差约束，不受成分股限制，可以更自由地在全市场中捕捉风格轮动带来的收益机会。
+                </p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--accent);"></div>
+                    <div class="fi-text"><strong>持仓极度分散</strong>：通常持有 1,000 - 4,000 只股票</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--accent-deep);"></div>
+                    <div class="fi-text"><strong>高换手率</strong>：双边年换手 60 - 150 倍</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--blue);"></div>
+                    <div class="fi-text"><strong>全市场覆盖</strong>：不限于单一指数成分股</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--teal);"></div>
+                    <div class="fi-text"><strong>风格灵活</strong>：市场交易活跃、结构性行情下表现更优</div>
+                </div>
+            </div>
+
+            <p style="font-size:15px; font-weight:600; color:var(--ink); margin: 24px 0 12px;">真实业绩参考</p>
+            <div class="data-grid">
+                <div class="data-callout green">
+                    <div class="dc-label">九坤精选 1 号</div>
+                    <div class="dc-value">18.22%</div>
+                    <div class="dc-sub">5 年年化 | 夏普 1.69 | 月胜率 70.37%</div>
+                </div>
+                <div class="data-callout green">
+                    <div class="dc-label">九坤天工 1 号</div>
+                    <div class="dc-value">13.14%</div>
+                    <div class="dc-sub">4.7 年年化 | 夏普 1.70</div>
+                </div>
+                <div class="data-callout green">
+                    <div class="dc-label">顽岩量化选股</div>
+                    <div class="dc-value">120-150x</div>
+                    <div class="dc-sub">双边换手 | 持仓 1,000+</div>
+                </div>
+            </div>
+
+            <div class="suitable-box">
+                <div class="sb-icon">&#128170;</div>
+                <div class="sb-text"><strong>适合投资者：</strong>追求长期绝对收益，风险承受能力较强，能接受较大净值波动的投资者</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Market Neutral -->
+    <div class="section" id="market-neutral">
+        <div class="section-header">
+            <div class="section-number">03</div>
+            <h2 class="section-title">市场中性 / 对冲策略</h2>
+        </div>
+        <div class="strategy-card">
+            <div class="concept-box">
+                <div class="label">核心逻辑</div>
+                <p>多头端持有一揽子股票赚取 Alpha，空头端用股指期货对冲掉市场 Beta。无论市场涨跌，收益仅来源于选股超额减去对冲成本。</p>
+            </div>
+
+            <div class="formula">
+                收益 = <span class="var">Alpha</span> 超额 <span class="op">-</span> <span class="var">对冲成本</span>（基差）
+            </div>
+
+            <div class="hedge-types">
+                <div class="hedge-card">
+                    <div class="hc-title" style="color:var(--green);">&#9679; 完全对冲（0 敞口）</div>
+                    <div class="hc-desc">多头和空头完全匹配，不对市场方向做任何判断，收益纯粹来源于选股 Alpha，波动率极低。</div>
+                </div>
+                <div class="hedge-card">
+                    <div class="hc-title" style="color:var(--blue);">&#9679; 混合对冲（最大 20% 敞口）</div>
+                    <div class="hc-desc">允许少量净敞口暴露，在对冲基础上适度参与市场方向，收益弹性略高于完全对冲。</div>
+                </div>
+            </div>
+
+            <div class="feature-list" style="margin-top: 20px;">
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--green);"></div>
+                    <div class="fi-text"><strong>低波动</strong>：净值曲线平滑，最大回撤可控</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--teal);"></div>
+                    <div class="fi-text"><strong>低相关性</strong>：与市场涨跌几乎无关</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--blue);"></div>
+                    <div class="fi-text"><strong>绝对收益</strong>：追求穿越牛熊的稳健回报</div>
+                </div>
+            </div>
+
+            <p style="font-size:15px; font-weight:600; color:var(--ink); margin: 24px 0 12px;">真实业绩参考</p>
+            <div class="data-grid">
+                <div class="data-callout teal">
+                    <div class="dc-label">悦海盈和 7 号（中性对冲）</div>
+                    <div class="dc-value">5.97%</div>
+                    <div class="dc-sub">年化收益 | 夏普 0.98 | 最大回撤 6.45%</div>
+                </div>
+                <div class="data-callout teal">
+                    <div class="dc-label">玉数涵瑞六号（T0 中性）</div>
+                    <div class="dc-value">8.46%</div>
+                    <div class="dc-sub">年化收益 | 夏普 2.21 | 最大回撤 -3.46%</div>
+                </div>
+                <div class="data-callout teal">
+                    <div class="dc-label">九证证券创新 1 号</div>
+                    <div class="dc-value">2.05</div>
+                    <div class="dc-sub">夏普比率 | 最大回撤 -6.28%</div>
+                </div>
+            </div>
+
+            <div class="suitable-box">
+                <div class="sb-icon">&#128176;</div>
+                <div class="sb-text"><strong>适合投资者：</strong>低风险偏好，追求稳健收益，适合作为资产配置的底仓或"压舱石"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Flexible Hedging -->
+    <div class="section" id="flexible-hedge">
+        <div class="section-header">
+            <div class="section-number">04</div>
+            <h2 class="section-title">灵活对冲策略</h2>
+        </div>
+        <div class="strategy-card">
+            <div class="concept-box">
+                <div class="label">核心逻辑</div>
+                <p>在市场中性策略基础上增加市场择时功能，敞口在 0 - 100% 之间动态调整。根据量化模型对市场趋势的判断，灵活控制风险暴露程度。</p>
+            </div>
+
+            <div class="formula">
+                收益 = <span class="var">Alpha</span> &times; 资金使用率 <span class="op">-</span> <span class="var">对冲成本</span> <span class="op">+</span> <span class="var">市场择时收益</span>
+            </div>
+
+            <div class="ad-grid">
+                <div class="ad-card attack">
+                    <div class="ad-label">进攻模式</div>
+                    <div class="ad-title">趋势上涨时放开敞口</div>
+                    <div class="ad-desc">当模型判断市场处于上升趋势时，逐步放大股票多头敞口，充分获取市场上涨红利。</div>
+                </div>
+                <div class="ad-card defend">
+                    <div class="ad-label">防守模式</div>
+                    <div class="ad-title">震荡下跌时降低敞口</div>
+                    <div class="ad-desc">当模型判断市场风险加大时，降低敞口甚至回到完全对冲，平滑收益波动、控制回撤。</div>
+                </div>
+            </div>
+
+            <p style="font-size:15px; font-weight:600; color:var(--ink); margin: 24px 0 12px;">真实业绩参考</p>
+            <div class="data-grid">
+                <div class="data-callout orange">
+                    <div class="dc-label">悦海盈和 12 号（灵活对冲）</div>
+                    <div class="dc-value">28.84%</div>
+                    <div class="dc-sub">年化收益 | 夏普 1.76 | 最大回撤 18.00%</div>
+                </div>
+                <div class="data-callout orange">
+                    <div class="dc-label">2024 年度收益</div>
+                    <div class="dc-value">45.41%</div>
+                    <div class="dc-sub">单年度表现突出</div>
+                </div>
+                <div class="data-callout orange">
+                    <div class="dc-label">2025 年度收益</div>
+                    <div class="dc-value">15.20%</div>
+                    <div class="dc-sub">截至最新数据</div>
+                </div>
+            </div>
+
+            <div class="suitable-box">
+                <div class="sb-icon">&#9878;</div>
+                <div class="sb-text"><strong>适合投资者：</strong>中等风险偏好，希望在不同市场环境中都能捕捉机会的投资者，兼具攻守兼备特征</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 5: CTA -->
+    <div class="section" id="cta">
+        <div class="section-header">
+            <div class="section-number">05</div>
+            <h2 class="section-title">CTA / 管理期货策略</h2>
+        </div>
+        <div class="strategy-card">
+            <div class="concept-box">
+                <div class="label">核心逻辑</div>
+                <p>投资于期货市场（商品期货、金融期货），通过趋势跟踪、均值回归或套利策略获取收益。与股票市场相关性极低，在市场暴跌时可能产生"Crisis Alpha"。</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--pink);"></div>
+                    <div class="fi-text"><strong>低相关性</strong>：与股票市场相关系数低，分散化效果好</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--pink);"></div>
+                    <div class="fi-text"><strong>双向交易</strong>：可做多也可做空，不论涨跌都有机会获利</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--pink);"></div>
+                    <div class="fi-text"><strong>危机 Alpha</strong>：市场暴跌时，趋势跟踪策略可能产生正收益</div>
+                </div>
+            </div>
+
+            <p style="font-size:15px; font-weight:600; color:var(--ink); margin: 24px 0 12px;">主要子策略</p>
+            <ul class="sub-list">
+                <li>
+                    <div class="sl-num">1</div>
+                    <div><strong>趋势跟踪（中长周期）</strong>：识别并跟随大宗商品或金融期货的价格趋势，是 CTA 最经典的策略类型</div>
+                </li>
+                <li>
+                    <div class="sl-num">2</div>
+                    <div><strong>均值回归</strong>：当价格偏离历史均值过多时，做反向交易博取价格回归</div>
+                </li>
+                <li>
+                    <div class="sl-num">3</div>
+                    <div><strong>跨品种套利</strong>：利用相关商品之间的价差异常进行套利交易</div>
+                </li>
+                <li>
+                    <div class="sl-num">4</div>
+                    <div><strong>跨期套利</strong>：利用同一品种不同交割月份合约的价差进行套利</div>
+                </li>
+            </ul>
+
+            <div class="suitable-box">
+                <div class="sb-icon">&#128200;</div>
+                <div class="sb-text"><strong>适合投资者：</strong>作为股票型策略的分散化配置补充，通常占总配置比例较小（5% - 15%）</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 6: T0 -->
+    <div class="section" id="t0">
+        <div class="section-header">
+            <div class="section-number">06</div>
+            <h2 class="section-title">T0 日内交易策略</h2>
+        </div>
+        <div class="strategy-card">
+            <div class="concept-box">
+                <div class="label">核心逻辑</div>
+                <p>在单个交易日内完成低买高卖，获取价差收益。A 股实行 T+1 制度，T0 策略通过持有底仓或融券方式实现日内回转交易。</p>
+            </div>
+
+            <div style="margin: 16px 0; padding: 16px 20px; background: #fafbfc; border-radius: 10px; border: 1px solid rgba(0,0,0,0.03);">
+                <p style="font-size:14px; color:var(--slate); line-height:1.7;">
+                    <strong style="color:var(--accent-deep);">T+1 制度下的 T0 实现：</strong>A 股当日买入的股票不能当日卖出，但通过已持有的底仓（或融券借入的股票），可以在日内先卖出再买回，变相实现 T0 交易。
+                </p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--teal);"></div>
+                    <div class="fi-text"><strong>高夏普比率</strong>：收益曲线平滑，风险调整后收益优异</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--teal);"></div>
+                    <div class="fi-text"><strong>高换手率</strong>：每日对持仓进行多轮回转交易</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--teal);"></div>
+                    <div class="fi-text"><strong>低回撤</strong>：日内平仓不隔夜，规避隔夜风险</div>
+                </div>
+                <div class="feature-item">
+                    <div class="fi-dot" style="background:var(--silver);"></div>
+                    <div class="fi-text"><strong>策略容量有限</strong>：资金规模增大后收益会衰减</div>
+                </div>
+            </div>
+
+            <p style="font-size:15px; font-weight:600; color:var(--ink); margin: 24px 0 12px;">真实业绩参考</p>
+            <div class="data-grid">
+                <div class="data-callout green">
+                    <div class="dc-label">玉数 500 指数 T0 增强</div>
+                    <div class="dc-value">36.80%</div>
+                    <div class="dc-sub">超额年化 | 超额周度胜率 87.04%</div>
+                </div>
+                <div class="data-callout green">
+                    <div class="dc-label">玉数 T0 中性</div>
+                    <div class="dc-value">8.46%</div>
+                    <div class="dc-sub">年化收益 | 夏普 2.21 | 最大回撤 -3.46%</div>
+                </div>
+            </div>
+
+            <div class="suitable-box">
+                <div class="sb-icon">&#128176;</div>
+                <div class="sb-text"><strong>适合投资者：</strong>追求极低波动的稳健配置，适合作为组合中的"稳压器"</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 7: Comparison Matrix -->
+    <div class="section" id="matrix">
+        <div class="section-header">
+            <div class="section-number" style="background:linear-gradient(135deg, #f59e0b, #f97316);">&#9733;</div>
+            <h2 class="section-title">六大策略全景对比矩阵</h2>
+        </div>
+        <div class="strategy-card" style="padding: 24px 8px;">
+            <div class="matrix-wrap">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>策略类型</th>
+                            <th>收益特征</th>
+                            <th>风险等级</th>
+                            <th>预期年化</th>
+                            <th>最大回撤范围</th>
+                            <th>与市场相关性</th>
+                            <th>策略容量</th>
+                            <th>适合投资者</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&#128200; 指数增强</td>
+                            <td>Beta + Alpha</td>
+                            <td><span class="tag tag-mid">中高</span></td>
+                            <td>基准 + 5~10%</td>
+                            <td>15% ~ 30%</td>
+                            <td>高（~0.95）</td>
+                            <td>大</td>
+                            <td>看好市场，愿担波动</td>
+                        </tr>
+                        <tr>
+                            <td>&#127919; 量化选股</td>
+                            <td>绝对收益</td>
+                            <td><span class="tag tag-high">高</span></td>
+                            <td>15% ~ 25%</td>
+                            <td>15% ~ 30%</td>
+                            <td>较高（~0.80）</td>
+                            <td>较大</td>
+                            <td>追求高收益，高承受力</td>
+                        </tr>
+                        <tr>
+                            <td>&#9878; 市场中性</td>
+                            <td>绝对收益</td>
+                            <td><span class="tag tag-low">低</span></td>
+                            <td>5% ~ 10%</td>
+                            <td>3% ~ 8%</td>
+                            <td>极低（~0.10）</td>
+                            <td>中</td>
+                            <td>低风险偏好，底仓配置</td>
+                        </tr>
+                        <tr>
+                            <td>&#9881; 灵活对冲</td>
+                            <td>攻守兼备</td>
+                            <td><span class="tag tag-mid">中</span></td>
+                            <td>10% ~ 30%</td>
+                            <td>10% ~ 20%</td>
+                            <td>中（0.3~0.6）</td>
+                            <td>中</td>
+                            <td>中等风险，全市场机会</td>
+                        </tr>
+                        <tr>
+                            <td>&#128202; CTA 期货</td>
+                            <td>危机 Alpha</td>
+                            <td><span class="tag tag-mid">中</span></td>
+                            <td>8% ~ 15%</td>
+                            <td>10% ~ 20%</td>
+                            <td>低（~0.20）</td>
+                            <td>中</td>
+                            <td>分散化配置补充</td>
+                        </tr>
+                        <tr>
+                            <td>&#9889; T0 日内</td>
+                            <td>稳健绝对收益</td>
+                            <td><span class="tag tag-low">低</span></td>
+                            <td>6% ~ 12%</td>
+                            <td>2% ~ 5%</td>
+                            <td>极低（~0.05）</td>
+                            <td>小</td>
+                            <td>极低波动，稳健配置</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chapter Navigation -->
+<div class="chapter-nav">
+    <a href="01-量化投资基础.html" class="ch-nav-btn">
+        <div class="cnb-arrow">&#8592;</div>
+        <div class="cnb-info">
+            <div class="cnb-label">上一章</div>
+            <div class="cnb-title">量化投资基础</div>
+        </div>
+    </a>
+    <a href="03-因子与模型.html" class="ch-nav-btn next">
+        <div class="cnb-arrow">&#8594;</div>
+        <div class="cnb-info">
+            <div class="cnb-label">下一章</div>
+            <div class="cnb-title">因子与模型</div>
+        </div>
+    </a>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>量化基金投资系统培训教程 · 仅供内部学习参考 · 不构成任何投资建议</p>
+</footer>
+
+</body>
+</html>

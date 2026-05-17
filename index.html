@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量化基金投资 — 系统培训教程</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --ink: #0f172a;
+            --slate: #334155;
+            --muted: #64748b;
+            --silver: #94a3b8;
+            --fog: #e2e8f0;
+            --snow: #f8fafc;
+            --accent: #667eea;
+            --accent-deep: #764ba2;
+            --accent-glow: rgba(102, 126, 234, 0.15);
+            --warm: #f59e0b;
+            --card-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.04);
+            --card-shadow-hover: 0 4px 12px rgba(102,126,234,0.12), 0 16px 48px rgba(15,23,42,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--ink);
+            background: var(--snow);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(248,250,252,0.85);
+            backdrop-filter: blur(16px) saturate(1.4);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px; height: 56px;
+        }
+        .nav-brand {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700; font-size: 16px; color: var(--ink);
+            letter-spacing: 0.02em;
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 6px; }
+        .nav-links a {
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            text-decoration: none; padding: 6px 12px; border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); background: var(--accent-glow); }
+
+        /* ── Hero ── */
+        .hero {
+            position: relative;
+            min-height: 540px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            padding: 80px 32px 60px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 40%, rgba(102,126,234,0.08), transparent),
+                radial-gradient(ellipse 70% 50% at 80% 60%, rgba(118,75,162,0.06), transparent),
+                linear-gradient(180deg, var(--snow) 0%, #f1f5f9 100%);
+        }
+        .hero-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(102,126,234,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102,126,234,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
+        }
+        .hero-content {
+            position: relative; text-align: center; max-width: 720px;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+            color: var(--accent); text-transform: uppercase;
+            background: var(--accent-glow);
+            padding: 6px 16px; border-radius: 100px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(102,126,234,0.12);
+        }
+        .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+        .hero h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 900; line-height: 1.2;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 17px; color: var(--muted); line-height: 1.8;
+            max-width: 520px; margin: 0 auto;
+        }
+
+        /* ── Overview ── */
+        .overview {
+            max-width: 1200px; margin: -20px auto 0; padding: 0 32px;
+            position: relative;
+        }
+        .overview-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 48px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .overview-card h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 20px; font-weight: 700; color: var(--ink);
+            margin-bottom: 24px;
+        }
+        .objectives {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .obj {
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .obj-icon {
+            flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px;
+            background: var(--accent-glow);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+        }
+        .obj-text { font-size: 14px; color: var(--slate); line-height: 1.6; }
+
+        /* ── Chapters ── */
+        .chapters {
+            max-width: 1200px; margin: 0 auto; padding: 64px 32px;
+        }
+        .chapters-head {
+            display: flex; align-items: baseline; justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        .chapters-head h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 24px; font-weight: 700; color: var(--ink);
+        }
+        .chapters-head span {
+            font-size: 13px; color: var(--muted); font-weight: 500;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            position: relative;
+            background: white;
+            border-radius: 14px;
+            padding: 28px 24px 24px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        .card::after {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-deep));
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.15);
+        }
+        .card:hover::after { opacity: 1; }
+        .card-num {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 11px; font-weight: 700;
+            color: var(--accent); letter-spacing: 0.06em;
+            margin-bottom: 12px;
+        }
+        .card-icon {
+            font-size: 28px; margin-bottom: 14px;
+            line-height: 1;
+        }
+        .card h3 {
+            font-size: 17px; font-weight: 700; color: var(--ink);
+            margin-bottom: 8px; line-height: 1.3;
+        }
+        .card p {
+            font-size: 13px; color: var(--muted); line-height: 1.7;
+            flex: 1;
+        }
+        .card-arrow {
+            margin-top: 16px;
+            font-size: 12px; font-weight: 600; color: var(--accent);
+            display: flex; align-items: center; gap: 4px;
+            opacity: 0; transform: translateX(-6px);
+            transition: all 0.3s;
+        }
+        .card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+        /* ── Footer ── */
+        footer {
+            max-width: 1200px; margin: 0 auto; padding: 32px;
+            border-top: 1px solid var(--fog);
+            text-align: center;
+        }
+        footer p { font-size: 12px; color: var(--silver); }
+
+        /* ── Stagger animation ── */
+        .card { opacity: 0; transform: translateY(20px); animation: fadeUp 0.5s ease forwards; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { min-height: 400px; padding: 100px 20px 40px; }
+            .overview-card { padding: 28px 24px; }
+            .grid { grid-template-columns: 1fr; }
+            .chapters { padding: 40px 20px; }
+        }
+
+        @media print {
+            nav { position: static; border: none; }
+            .hero { min-height: auto; padding: 20px; }
+            .hero::before, .hero-grid { display: none; }
+            .card { box-shadow: none; break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="index.html" class="nav-brand">量化基金培训</a>
+        <div class="nav-links">
+            <a href="01-量化投资基础.html">基础原理</a>
+            <a href="02-策略全景图.html">策略全景</a>
+            <a href="03-因子与模型.html">因子模型</a>
+            <a href="04-风险管理.html">风险管理</a>
+            <a href="05-基金经理评估.html">经理评估</a>
+            <a href="06-机构图谱.html">机构图谱</a>
+            <a href="07-配置框架.html">配置框架</a>
+            <a href="08-案例实战.html">案例实战</a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+        <div class="hero-badge">家族办公室 · 内部培训</div>
+        <h1>量化基金投资<br><em>系统培训教程</em></h1>
+        <p>面向家族办公室投资顾问的 A 股量化基金知识体系——从基础原理到实战配置，八章节助你建立完整的量化投资认知框架</p>
+    </div>
+</section>
+
+<div class="overview">
+    <div class="overview-card">
+        <h2>学习目标</h2>
+        <div class="objectives">
+            <div class="obj">
+                <div class="obj-icon">&#9670;</div>
+                <div class="obj-text">理解量化投资的科学方法论与核心运作原理</div>
+            </div>
+            <div class="obj">
+                <div class="obj-icon">&#9670;</div>
+                <div class="obj-text">掌握六大主流量化策略的收益特征与适用场景</div>
+            </div>
+            <div class="obj">
+                <div class="obj-icon">&#9670;</div>
+                <div class="obj-text">学会用核心指标评估基金风险与业绩</div>
+            </div>
+            <div class="obj">
+                <div class="obj-icon">&#9670;</div>
+                <div class="obj-text">建立基金经理尽调的五维度分析框架</div>
+            </div>
+            <div class="obj">
+                <div class="obj-icon">&#9670;</div>
+                <div class="obj-text">深入了解六家 A 股头部量化机构的策略与实力</div>
+            </div>
+            <div class="obj">
+                <div class="obj-icon">&#9670;</div>
+                <div class="obj-text">能够独立设计家办视角的量化基金配置方案</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="chapters">
+    <div class="chapters-head">
+        <h2>课程章节</h2>
+        <span>共 8 章 · 建议按序学习</span>
+    </div>
+    <div class="grid">
+        <a href="01-量化投资基础.html" class="card" style="animation-delay:.05s">
+            <div class="card-num">CHAPTER 01</div>
+            <div class="card-icon">&#128200;</div>
+            <h3>量化投资基础</h3>
+            <p>从科学方法论理解量化投资的本质，建立核心概念框架</p>
+            <div class="card-arrow">开始学习 &#8594;</div>
+        </a>
+        <a href="02-策略全景图.html" class="card" style="animation-delay:.1s">
+            <div class="card-num">CHAPTER 02</div>
+            <div class="card-icon">&#127919;</div>
+            <h3>策略全景图</h3>
+            <p>系统梳理指数增强、量化选股、市场中性、灵活对冲、CTA、T0 六大策略</p>
+            <div class="card-arrow">开始学习 &#8594;</div>
+        </a>
+        <a href="03-因子与模型.html" class="card" style="animation-delay:.15s">
+            <div class="card-num">CHAPTER 03</div>
+            <div class="card-icon">&#129504;</div>
+            <h3>因子与模型</h3>
+            <p>深入理解因子投资原理，AI 在量化中的应用</p>
+            <div class="card-arrow">开始学习 &#8594;</div>
+        </a>
+        <a href="04-风险管理.html" class="card" style="animation-delay:.2s">
+            <div class="card-num">CHAPTER 04</div>
+            <div class="card-icon">&#128737;</div>
+            <h3>风险管理</h3>
+            <p>掌握核心评估指标，理解风控体系和尾部风险</p>
+            <div class="card-arrow">开始学习 &#8594;</div>
+        </a>
+        <a href="05-基金经理评估.html" class="card" style="animation-delay:.25s">
+            <div class="card-num">CHAPTER 05</div>
+            <div class="card-icon">&#128269;</div>
+            <h3>基金经理评估</h3>
+            <p>建立五维度尽调框架，学会看业绩曲线</p>
+            <div class="card-arrow">开始学习 &#8594;</div>
+        </a>
+        <a href="06-机构图谱.html" class="card" style="animation-delay:.3s">
+            <div class="card-num">CHAPTER 06</div>
+            <div class="card-icon">&#127963;</div>
+            <h3>机构图谱</h3>
+            <p>深度拆解六家头部量化机构，理解行业格局</p>
+            <div class="card-arrow">开始学习 &#8594;</div>
+        </a>
+        <a href="07-配置框架.html" class="card" style="animation-delay:.35s">
+            <div class="card-num">CHAPTER 07</div>
+            <div class="card-icon">&#9878;</div>
+            <h3>配置框架</h3>
+            <p>家办视角的量化基金配置方法论</p>
+            <div class="card-arrow">开始学习 &#8594;</div>
+        </a>
+        <a href="08-案例实战.html" class="card" style="animation-delay:.4s">
+            <div class="card-num">CHAPTER 08</div>
+            <div class="card-icon">&#128640;</div>
+            <h3>案例实战</h3>
+            <p>5000 万配置方案的实战演练与知识检验</p>
+            <div class="card-arrow">开始学习 &#8594;</div>
+        </a>
+    </div>
+</section>
+
+<footer>
+    <p>量化基金投资系统培训教程 · 仅供内部学习参考 · 不构成任何投资建议</p>
+</footer>
+
+</body>
+</html>

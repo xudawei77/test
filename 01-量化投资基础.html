@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一章 量化投资基础 — 量化基金系统培训教程</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --ink: #0f172a;
+            --slate: #334155;
+            --muted: #64748b;
+            --silver: #94a3b8;
+            --fog: #e2e8f0;
+            --snow: #f8fafc;
+            --accent: #667eea;
+            --accent-deep: #764ba2;
+            --accent-glow: rgba(102, 126, 234, 0.15);
+            --warm: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --card-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.04);
+            --card-shadow-hover: 0 4px 12px rgba(102,126,234,0.12), 0 16px 48px rgba(15,23,42,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--ink);
+            background: var(--snow);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Navigation ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(248,250,252,0.88);
+            backdrop-filter: blur(16px) saturate(1.4);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px; height: 56px;
+        }
+        .nav-brand {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700; font-size: 16px; color: var(--ink);
+            letter-spacing: 0.02em;
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+        .nav-links a {
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            text-decoration: none; padding: 6px 11px; border-radius: 6px;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .nav-links a:hover { color: var(--accent); background: var(--accent-glow); }
+        .nav-links a.active {
+            color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            font-weight: 600;
+        }
+
+        /* ── Chapter Hero ── */
+        .chapter-hero {
+            position: relative;
+            padding: 120px 32px 60px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .chapter-hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        .chapter-hero::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+            background: linear-gradient(transparent, rgba(248,250,252,0.3));
+        }
+        .hero-inner {
+            max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;
+        }
+        .hero-breadcrumb {
+            font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 16px;
+        }
+        .hero-breadcrumb a { color: rgba(255,255,255,0.7); text-decoration: none; }
+        .hero-breadcrumb a:hover { color: #fff; }
+        .hero-chapter-num {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 14px; font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .hero-chapter-num::before {
+            content: ''; display: inline-block; width: 24px; height: 2px;
+            background: rgba(255,255,255,0.5); vertical-align: middle;
+            margin-right: 10px;
+        }
+        .chapter-hero h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 900; color: #fff;
+            line-height: 1.3; margin-bottom: 16px;
+        }
+        .chapter-hero .hero-desc {
+            font-size: 16px; color: rgba(255,255,255,0.8);
+            max-width: 640px; line-height: 1.8;
+        }
+
+        /* ── Reading Progress Bar ── */
+        .progress-bar {
+            position: fixed; top: 56px; left: 0; z-index: 99;
+            height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-deep));
+            transition: width 0.1s linear;
+        }
+
+        /* ── Main Content ── */
+        .content {
+            max-width: 900px; margin: 0 auto; padding: 60px 32px 40px;
+        }
+
+        /* ── Section ── */
+        .section {
+            margin-bottom: 72px;
+            opacity: 0; transform: translateY(24px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.15s; }
+        .section:nth-child(3) { animation-delay: 0.2s; }
+        .section:nth-child(4) { animation-delay: 0.25s; }
+        .section:nth-child(5) { animation-delay: 0.3s; }
+        .section:nth-child(6) { animation-delay: 0.35s; }
+
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        .section-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 32px; padding-bottom: 16px;
+            border-bottom: 2px solid var(--fog);
+        }
+        .section-num {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 13px; font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-header h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 22px; font-weight: 700; color: var(--ink);
+            line-height: 1.3;
+        }
+
+        /* ── Text ── */
+        .text-block { margin-bottom: 20px; }
+        .text-block p {
+            font-size: 15px; color: var(--slate); line-height: 1.9;
+            margin-bottom: 12px;
+        }
+        .text-block p:last-child { margin-bottom: 0; }
+
+        /* ── Highlight Box ── */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.06), rgba(118,75,162,0.04));
+            border-left: 4px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .highlight-box.quote {
+            background: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(245,158,11,0.02));
+            border-left-color: var(--warm);
+        }
+        .highlight-box p {
+            font-size: 15px; color: var(--slate); line-height: 1.8;
+        }
+        .highlight-box .quote-source {
+            font-size: 13px; color: var(--muted); margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* ── Definition Card ── */
+        .def-card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 32px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            margin: 24px 0;
+        }
+        .def-card .def-label {
+            font-size: 12px; font-weight: 600; color: var(--accent);
+            letter-spacing: 0.08em; text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .def-card .def-text {
+            font-size: 16px; color: var(--ink); line-height: 1.8;
+            font-weight: 500;
+        }
+        .def-card .def-sub {
+            font-size: 14px; color: var(--muted); line-height: 1.8;
+            margin-top: 10px;
+        }
+
+        /* ── Comparison Table ── */
+        .compare-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin: 24px 0;
+        }
+        .compare-table thead th {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: #fff;
+            font-size: 14px; font-weight: 600;
+            padding: 14px 20px;
+            text-align: left;
+        }
+        .compare-table thead th:first-child { width: 120px; }
+        .compare-table tbody td {
+            padding: 14px 20px;
+            font-size: 14px; color: var(--slate);
+            border-bottom: 1px solid var(--fog);
+            vertical-align: top;
+            line-height: 1.7;
+        }
+        .compare-table tbody tr:last-child td { border-bottom: none; }
+        .compare-table tbody tr:hover { background: rgba(102,126,234,0.03); }
+        .compare-table tbody td:first-child {
+            font-weight: 600; color: var(--ink);
+            white-space: nowrap;
+        }
+        .tag-quant {
+            display: inline-block; font-size: 12px; font-weight: 600;
+            color: var(--accent); background: var(--accent-glow);
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .tag-subj {
+            display: inline-block; font-size: 12px; font-weight: 600;
+            color: var(--warm); background: rgba(245,158,11,0.1);
+            padding: 2px 8px; border-radius: 4px;
+        }
+
+        /* ── Analogy Box ── */
+        .analogy-box {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 32px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            margin: 24px 0;
+            display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px;
+            align-items: center;
+        }
+        .analogy-side {
+            text-align: center;
+        }
+        .analogy-side .analogy-label {
+            font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+            margin-bottom: 10px; text-transform: uppercase;
+        }
+        .analogy-side .analogy-label.pe { color: var(--warm); }
+        .analogy-side .analogy-label.quant { color: var(--accent); }
+        .analogy-side .analogy-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 18px; font-weight: 700; color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .analogy-side .analogy-desc {
+            font-size: 13px; color: var(--muted); line-height: 1.7;
+        }
+        .analogy-divider {
+            width: 1px; height: 80px;
+            background: linear-gradient(transparent, var(--fog), transparent);
+        }
+
+        /* ── Pipeline Flow ── */
+        .pipeline {
+            display: flex; align-items: stretch; gap: 0;
+            margin: 32px 0;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .pipeline-step {
+            flex: 1; min-width: 130px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px 16px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .pipeline-step:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.15);
+        }
+        .pipeline-step .step-num {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 11px; font-weight: 700;
+            color: var(--accent); letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+        .pipeline-step .step-icon {
+            font-size: 26px; margin-bottom: 10px; line-height: 1;
+        }
+        .pipeline-step .step-name {
+            font-size: 14px; font-weight: 700; color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .pipeline-step .step-desc {
+            font-size: 12px; color: var(--muted); line-height: 1.6;
+        }
+        .pipeline-arrow {
+            display: flex; align-items: center;
+            color: var(--silver); font-size: 18px;
+            padding: 0 4px; flex-shrink: 0;
+        }
+
+        /* ── Pipeline Detail Cards ── */
+        .pipeline-details {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px; margin-top: 24px;
+        }
+        .pipeline-detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            border-top: 3px solid;
+            border-top-color: var(--accent);
+        }
+        .pipeline-detail-card:nth-child(2) { border-top-color: #818cf8; }
+        .pipeline-detail-card:nth-child(3) { border-top-color: #a78bfa; }
+        .pipeline-detail-card:nth-child(4) { border-top-color: #c084fc; }
+        .pipeline-detail-card:nth-child(5) { border-top-color: #e879f9; }
+        .pipeline-detail-card:nth-child(6) { border-top-color: #f472b6; }
+        .pipeline-detail-card h4 {
+            font-size: 15px; font-weight: 700; color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .pipeline-detail-card p {
+            font-size: 13px; color: var(--muted); line-height: 1.7;
+        }
+
+        /* ── Insight Box ── */
+        .insight-box {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin: 28px 0;
+            color: #fff;
+        }
+        .insight-box .insight-label {
+            font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px; text-transform: uppercase;
+        }
+        .insight-box p {
+            font-size: 15px; line-height: 1.8;
+            color: rgba(255,255,255,0.95);
+        }
+
+        /* ── Timeline ── */
+        .timeline {
+            position: relative;
+            padding-left: 36px;
+            margin: 28px 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute; left: 14px; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-deep), var(--accent));
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 36px;
+        }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-item::before {
+            content: '';
+            position: absolute; left: -30px; top: 6px;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            border: 3px solid var(--snow);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+        .timeline-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px 28px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.3s;
+        }
+        .timeline-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.12);
+        }
+        .timeline-phase {
+            font-size: 12px; font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+        .timeline-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 17px; font-weight: 700; color: var(--ink);
+            margin-bottom: 10px;
+        }
+        .timeline-period {
+            font-size: 12px; color: var(--silver); font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .timeline-body {
+            font-size: 14px; color: var(--slate); line-height: 1.8;
+        }
+        .timeline-body ul {
+            list-style: none; padding: 0;
+        }
+        .timeline-body ul li {
+            padding-left: 18px; position: relative;
+            margin-bottom: 6px;
+        }
+        .timeline-body ul li::before {
+            content: '';
+            position: absolute; left: 0; top: 10px;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* ── Stats Grid ── */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px; margin: 24px 0;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .stat-value {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 32px; font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2; margin-bottom: 6px;
+        }
+        .stat-label {
+            font-size: 13px; color: var(--muted); font-weight: 500;
+        }
+        .stat-sub {
+            font-size: 11px; color: var(--silver); margin-top: 4px;
+        }
+
+        /* ── Tier Structure ── */
+        .tier-list {
+            display: flex; flex-direction: column; gap: 12px;
+            margin: 20px 0;
+        }
+        .tier-row {
+            display: flex; align-items: center; gap: 16px;
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .tier-badge {
+            flex-shrink: 0;
+            font-size: 12px; font-weight: 700; color: #fff;
+            padding: 4px 12px; border-radius: 6px;
+            min-width: 80px; text-align: center;
+        }
+        .tier-badge.t1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .tier-badge.t2 { background: linear-gradient(135deg, #818cf8, #a78bfa); }
+        .tier-badge.t3 { background: linear-gradient(135deg, #a5b4fc, #c4b5fd); color: #4338ca; }
+        .tier-badge.t4 { background: var(--fog); color: var(--muted); }
+        .tier-info { flex: 1; }
+        .tier-info .tier-name {
+            font-size: 14px; font-weight: 600; color: var(--ink);
+        }
+        .tier-info .tier-desc {
+            font-size: 12px; color: var(--muted); margin-top: 2px;
+        }
+        .tier-count {
+            font-size: 13px; font-weight: 600; color: var(--accent);
+            white-space: nowrap;
+        }
+
+        /* ── Principles ── */
+        .principles {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px; margin: 24px 0;
+        }
+        .principle-card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .principle-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .principle-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 4px;
+        }
+        .principle-card:nth-child(1)::before { background: linear-gradient(90deg, #667eea, #818cf8); }
+        .principle-card:nth-child(2)::before { background: linear-gradient(90deg, #818cf8, #a78bfa); }
+        .principle-card:nth-child(3)::before { background: linear-gradient(90deg, #a78bfa, #c084fc); }
+        .principle-icon {
+            font-size: 32px; margin-bottom: 14px; line-height: 1;
+        }
+        .principle-card h4 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 17px; font-weight: 700; color: var(--ink);
+            margin-bottom: 10px;
+        }
+        .principle-card p {
+            font-size: 14px; color: var(--slate); line-height: 1.8;
+        }
+
+        /* ── Glossary Table ── */
+        .glossary {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin: 24px 0;
+        }
+        .glossary-header {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            padding: 20px 28px;
+            color: #fff;
+        }
+        .glossary-header h3 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 17px; font-weight: 700;
+        }
+        .glossary-header p {
+            font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 4px;
+        }
+        .glossary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .glossary-table tr {
+            border-bottom: 1px solid var(--fog);
+            transition: background 0.2s;
+        }
+        .glossary-table tr:last-child { border-bottom: none; }
+        .glossary-table tr:hover { background: rgba(102,126,234,0.03); }
+        .glossary-table td {
+            padding: 14px 20px;
+            font-size: 14px; color: var(--slate);
+            line-height: 1.7;
+            vertical-align: top;
+        }
+        .glossary-table td:first-child {
+            width: 140px;
+            font-weight: 700; color: var(--ink);
+            white-space: nowrap;
+        }
+        .glossary-table td:first-child .en-name {
+            display: block;
+            font-size: 11px; font-weight: 500; color: var(--silver);
+            margin-top: 2px;
+        }
+        .glossary-table .formula {
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: rgba(102,126,234,0.08);
+            color: var(--accent-deep);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+
+        /* ── Chapter Navigation ── */
+        .chapter-nav {
+            max-width: 900px; margin: 0 auto;
+            padding: 40px 32px 20px;
+            display: flex; justify-content: space-between; align-items: stretch;
+            gap: 20px;
+        }
+        .chapter-nav a {
+            flex: 1;
+            display: flex; align-items: center; gap: 14px;
+            background: white;
+            border-radius: 14px;
+            padding: 20px 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.04);
+            text-decoration: none; color: inherit;
+            transition: all 0.3s;
+        }
+        .chapter-nav a:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.15);
+        }
+        .chapter-nav a.next { text-align: right; justify-content: flex-end; }
+        .chapter-nav .nav-arrow {
+            font-size: 20px; color: var(--accent); flex-shrink: 0;
+        }
+        .chapter-nav .nav-info .nav-direction {
+            font-size: 11px; color: var(--silver); font-weight: 500;
+            letter-spacing: 0.06em; text-transform: uppercase;
+        }
+        .chapter-nav .nav-info .nav-title {
+            font-size: 14px; font-weight: 600; color: var(--ink);
+            margin-top: 2px;
+        }
+
+        /* ── Footer ── */
+        footer {
+            max-width: 1200px; margin: 0 auto; padding: 24px 32px;
+            border-top: 1px solid var(--fog);
+            text-align: center;
+        }
+        footer p { font-size: 12px; color: var(--silver); }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .content { padding: 40px 20px 20px; }
+            .pipeline { flex-direction: column; gap: 0; }
+            .pipeline-arrow { transform: rotate(90deg); justify-content: center; padding: 6px 0; }
+            .pipeline-step { min-width: auto; }
+            .analogy-box { grid-template-columns: 1fr; }
+            .analogy-divider { width: 100%; height: 1px; }
+            .chapter-nav { flex-direction: column; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .compare-table { font-size: 13px; }
+            .compare-table thead th, .compare-table tbody td { padding: 10px 14px; }
+            .tier-row { flex-wrap: wrap; }
+        }
+
+        @media print {
+            nav, .progress-bar { position: static; }
+            .chapter-hero { background: #f0f0f0 !important; }
+            .chapter-hero h1, .chapter-hero .hero-desc { color: #000 !important; }
+            .section { break-inside: avoid; opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+    <div class="nav-inner">
+        <a href="index.html" class="nav-brand">量化基金培训</a>
+        <div class="nav-links">
+            <a href="index.html">首页</a>
+            <a href="01-量化投资基础.html" class="active">基础原理</a>
+            <a href="02-策略全景图.html">策略全景</a>
+            <a href="03-因子与模型.html">因子模型</a>
+            <a href="04-风险管理.html">风险管理</a>
+            <a href="05-基金经理评估.html">经理评估</a>
+            <a href="06-机构图谱.html">机构图谱</a>
+            <a href="07-配置框架.html">配置框架</a>
+            <a href="08-案例实战.html">案例实战</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+<!-- Chapter Hero -->
+<section class="chapter-hero">
+    <div class="hero-inner">
+        <div class="hero-breadcrumb"><a href="index.html">首页</a> &nbsp;/&nbsp; 第一章</div>
+        <div class="hero-chapter-num">CHAPTER 01</div>
+        <h1>量化投资基础</h1>
+        <p class="hero-desc">从科学方法论理解量化投资的本质，掌握核心概念与行业全貌，为后续深入学习建立扎实的认知基础。</p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="content">
+
+    <!-- Section 1: What is Quant Investing -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">一</div>
+            <h2>什么是量化投资</h2>
+        </div>
+
+        <div class="def-card">
+            <div class="def-label">核心定义</div>
+            <div class="def-text">量化投资是借助数学模型、统计方法和计算机技术，以数据为基础进行投资决策的科学方法。</div>
+            <div class="def-sub">它不是一种策略，而是一套方法论——用科学的、系统化的方式替代人的主观判断，追求更客观、更高效的投资过程。</div>
+        </div>
+
+        <div class="text-block">
+            <p>量化投资的核心理念可以用两句话概括：<strong>客观理性</strong>、<strong>科学引擎提升投资表现</strong>。与传统主观投资依赖基金经理的个人经验和直觉不同，量化投资将投资过程拆解为可量化、可回测、可复制的系统化流程。</p>
+            <p>量化投资不是要取代人，而是用技术手段增强人的能力。基金经理的角色从"拍脑袋决策"转变为"设计和管理模型"，人的价值体现在策略研发、风险控制和系统优化上。</p>
+        </div>
+
+        <div class="highlight-box quote">
+            <p><strong>"一切皆可建模，计算求解世界"</strong></p>
+            <div class="quote-source">— 九坤投资（中国头部量化私募）</div>
+        </div>
+
+        <!-- Comparison Table -->
+        <h3 style="font-size:17px; font-weight:700; color:var(--ink); margin: 36px 0 16px; font-family:'Noto Serif SC',serif;">量化投资 vs 主观投资</h3>
+
+        <table class="compare-table">
+            <thead>
+                <tr>
+                    <th>对比维度</th>
+                    <th><span class="tag-quant">量化投资</span></th>
+                    <th><span class="tag-subj">主观投资</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>决策依据</td>
+                    <td>数据驱动，模型信号决策，基于统计规律和回测验证</td>
+                    <td>经验驱动，基金经理主观判断，基于调研和逻辑推演</td>
+                </tr>
+                <tr>
+                    <td>情绪影响</td>
+                    <td>极低。程序化执行，避免恐惧和贪婪的情绪干扰</td>
+                    <td>较高。人为决策容易受情绪、认知偏差影响</td>
+                </tr>
+                <tr>
+                    <td>信息覆盖</td>
+                    <td>可同时跟踪全市场数千只股票的海量数据</td>
+                    <td>受限于人的精力，通常深度覆盖几十只股票</td>
+                </tr>
+                <tr>
+                    <td>持仓分散度</td>
+                    <td>高度分散，通常持有数百至数千只股票</td>
+                    <td>相对集中，通常持有几十只股票</td>
+                </tr>
+                <tr>
+                    <td>交易速度</td>
+                    <td>毫秒级响应，可捕捉极短期的市场机会</td>
+                    <td>人工下单，交易速度受限于人的反应时间</td>
+                </tr>
+                <tr>
+                    <td>策略一致性</td>
+                    <td>高度一致，规则化执行不受状态波动影响</td>
+                    <td>可能波动，投资风格和执行随时间变化</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- PE/VC Analogy -->
+        <h3 style="font-size:17px; font-weight:700; color:var(--ink); margin: 36px 0 16px; font-family:'Noto Serif SC',serif;">类比理解：从 PE/VC 到量化</h3>
+
+        <div class="text-block">
+            <p>作为一级市场出身的投资顾问，你可以用以下类比快速建立对量化投资的直觉：</p>
+        </div>
+
+        <div class="analogy-box">
+            <div class="analogy-side">
+                <div class="analogy-label pe">PE / VC</div>
+                <div class="analogy-title">定性分析</div>
+                <div class="analogy-desc">看商业模式和团队<br>深度调研少数项目<br>靠人的判断力取胜</div>
+            </div>
+            <div class="analogy-divider"></div>
+            <div class="analogy-side">
+                <div class="analogy-label quant">量化投资</div>
+                <div class="analogy-title">定量分析</div>
+                <div class="analogy-desc">看数据规律和统计模型<br>同时扫描全市场机会<br>靠科学方法论取胜</div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>关键认知：</strong>PE 投资和量化投资并非对立关系。PE 擅长捕捉长期的结构性机会（商业模式创新、产业升级），量化擅长捕捉市场中的短期定价偏差和统计规律。两者互补，可共同构成家族办公室的完整投资版图。</p>
+        </div>
+    </div>
+
+    <!-- Section 2: Full Pipeline -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">二</div>
+            <h2>量化投资全链路</h2>
+        </div>
+
+        <div class="text-block">
+            <p>量化投资绝非"写个程序就能赚钱"那么简单。它是一套完整的系统工程，从原始数据到最终交易，需要经过六个核心环节的精密配合。任何一个环节的短板，都可能导致整体表现大打折扣。</p>
+        </div>
+
+        <!-- Visual Pipeline -->
+        <div class="pipeline">
+            <div class="pipeline-step">
+                <div class="step-num">STEP 01</div>
+                <div class="step-icon">&#128202;</div>
+                <div class="step-name">数据采集</div>
+            </div>
+            <div class="pipeline-arrow">&#10132;</div>
+            <div class="pipeline-step">
+                <div class="step-num">STEP 02</div>
+                <div class="step-icon">&#128270;</div>
+                <div class="step-name">因子挖掘</div>
+            </div>
+            <div class="pipeline-arrow">&#10132;</div>
+            <div class="pipeline-step">
+                <div class="step-num">STEP 03</div>
+                <div class="step-icon">&#129504;</div>
+                <div class="step-name">模型训练</div>
+            </div>
+            <div class="pipeline-arrow">&#10132;</div>
+            <div class="pipeline-step">
+                <div class="step-num">STEP 04</div>
+                <div class="step-icon">&#9878;</div>
+                <div class="step-name">组合构建</div>
+            </div>
+            <div class="pipeline-arrow">&#10132;</div>
+            <div class="pipeline-step">
+                <div class="step-num">STEP 05</div>
+                <div class="step-icon">&#9889;</div>
+                <div class="step-name">交易执行</div>
+            </div>
+            <div class="pipeline-arrow">&#10132;</div>
+            <div class="pipeline-step">
+                <div class="step-num">STEP 06</div>
+                <div class="step-icon">&#128737;</div>
+                <div class="step-name">风险控制</div>
+            </div>
+        </div>
+
+        <!-- Pipeline Details -->
+        <div class="pipeline-details">
+            <div class="pipeline-detail-card">
+                <h4>&#128202; 数据采集</h4>
+                <p>采集行情数据（量价、盘口）、基本面数据（财务报表、分析师预期）、另类数据（舆情、卫星图、供应链数据）等。数据质量是量化投资的基石，"Garbage in, garbage out"——数据决定了策略的上限。</p>
+            </div>
+            <div class="pipeline-detail-card">
+                <h4>&#128270; 因子挖掘</h4>
+                <p>从海量数据中提炼出对股票收益有预测能力的"因子"（特征）。传统因子包括估值、动量、质量等，前沿机构还利用机器学习挖掘非线性因子。因子是量化投资的"原材料"。</p>
+            </div>
+            <div class="pipeline-detail-card">
+                <h4>&#129504; 模型训练</h4>
+                <p>将因子输入数学模型（线性回归、决策树、深度神经网络等），训练出预测股票未来收益的模型。模型需要在样本外数据上持续有效，避免过拟合是核心挑战。</p>
+            </div>
+            <div class="pipeline-detail-card">
+                <h4>&#9878; 组合构建</h4>
+                <p>根据模型预测信号，结合风险预算、行业暴露限制、流动性约束等条件，通过优化算法确定每只股票的权重。目标是最大化预期超额收益的同时控制风险敞口。</p>
+            </div>
+            <div class="pipeline-detail-card">
+                <h4>&#9889; 交易执行</h4>
+                <p>将组合目标转化为实际交易指令，通过算法交易（TWAP、VWAP、最优执行等）最小化市场冲击和滑点成本。高频交易和低延迟技术是这个环节的核心竞争力。</p>
+            </div>
+            <div class="pipeline-detail-card">
+                <h4>&#128737; 风险控制</h4>
+                <p>贯穿全流程的"守护者"。包括事前的风险约束（仓位限制、行业偏离度）、事中的实时监控（最大回撤预警）、事后的归因分析（收益来源拆解）。风控不是限制收益，而是保护收益。</p>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <div class="insight-label">核心洞察</div>
+            <p>量化投资是一个<strong>系统工程</strong>，每个环节都需要大量投入。头部量化私募通常拥有数百人的团队，其中投研人员占比超过60%，在算力基础设施上的年投入可达数亿元。评估一家量化机构，不能只看策略，更要看它在全链路每个环节的综合实力。</p>
+        </div>
+    </div>
+
+    <!-- Section 3: History -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">三</div>
+            <h2>A股量化市场发展历程</h2>
+        </div>
+
+        <div class="text-block">
+            <p>A 股量化投资的发展并非一帆风顺，经历了从萌芽到蛰伏再到成熟的曲折历程。理解这段历史，有助于我们更深刻地认识当前行业格局和未来趋势。</p>
+        </div>
+
+        <div class="timeline">
+            <!-- Phase 1 -->
+            <div class="timeline-item">
+                <div class="timeline-card">
+                    <div class="timeline-phase">起步期</div>
+                    <div class="timeline-title">2010 - 2014：破冰与试错</div>
+                    <div class="timeline-period">&#128197; 2010年4月 — 沪深300股指期货上市，A股量化投资有了基础对冲工具</div>
+                    <div class="timeline-body">
+                        <ul>
+                            <li>2010年沪深300股指期货上市，标志着 A 股量化对冲策略的起点</li>
+                            <li>早期管理人能力良莠不齐，部分产品收益来源不透明</li>
+                            <li>2014年12月出现量化产品"黑天鹅"事件：市场风格极端切换，部分量化策略出现大幅回撤，行业首次经历严峻压力测试</li>
+                            <li>这一阶段的教育意义：投资顾问和投资者开始认识到量化策略并非"稳赚不赔"，风控能力至关重要</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="timeline-item">
+                <div class="timeline-card">
+                    <div class="timeline-phase">蛰伏期</div>
+                    <div class="timeline-title">2015 - 2018：出清与进化</div>
+                    <div class="timeline-period">&#128197; 2015年9月 — 股指期货交易限制政策出台</div>
+                    <div class="timeline-body">
+                        <ul>
+                            <li>2015年"股市异常波动"后，监管大幅收紧股指期货交易限制（保证金提高、手数限制），量化对冲策略的核心工具受到严重影响</li>
+                            <li>行业进入"去伪存真"阶段：缺乏核心竞争力的机构被淘汰，存活下来的机构被迫策略升级</li>
+                            <li>这一时期的重要变化：量化策略从依赖单一工具（股指期货对冲）向多元化策略演进，股票多头量化、CTA 等策略崛起</li>
+                            <li>头部机构（如九坤、幻方等）在逆境中完成了投研体系和团队的核心建设</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3 -->
+            <div class="timeline-item">
+                <div class="timeline-card">
+                    <div class="timeline-phase">成熟期</div>
+                    <div class="timeline-title">2019 至今：规模化与制度化</div>
+                    <div class="timeline-period">&#128197; 2019年4月 — 股指期货交易限制逐步放开</div>
+                    <div class="timeline-body">
+                        <ul>
+                            <li>2019年起股指期货限制逐步松绑，行业迎来规模增长加速期</li>
+                            <li>多家量化私募管理规模突破百亿，行业实质性进入成熟期</li>
+                            <li>2024年"新国九条"发布，强调加强量化交易监管；程序化交易新规出台，对报告制度、交易行为规范提出明确要求</li>
+                            <li>监管趋利好的一面：促进行业优胜劣汰，推动量化机构提升合规能力和策略质量</li>
+                            <li>当前阶段特征：头部效应加剧、策略同质化竞争加大、AI和机器学习成为新的核心赛道</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>投资顾问视角：</strong>A 股量化行业的"坎坷历史"恰恰说明，经历过完整市场周期的机构更具投资价值。在评估量化基金时，应关注其在2015年、2018年、2024年等关键年份的表现，检验其风控能力的真实性。</p>
+        </div>
+    </div>
+
+    <!-- Section 4: Market Size -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">四</div>
+            <h2>市场规模与行业格局</h2>
+        </div>
+
+        <div class="text-block">
+            <p>经过十余年的发展，A 股量化私募行业已经成长为不可忽视的重要力量。以下关键数据可以帮助你快速建立对行业规模的认知：</p>
+        </div>
+
+        <!-- Key Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">~5.56万亿</div>
+                <div class="stat-label">中国证券私募总规模</div>
+                <div class="stat-sub">截至2024年</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">~1.49万亿</div>
+                <div class="stat-label">量化私募管理规模</div>
+                <div class="stat-sub">截至2024年</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">~27%</div>
+                <div class="stat-label">量化在证券私募中占比</div>
+                <div class="stat-sub">2017年不足5%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">20-30家</div>
+                <div class="stat-label">百亿量化私募数量</div>
+                <div class="stat-sub">头部效应明显</div>
+            </div>
+        </div>
+
+        <div class="text-block">
+            <p>量化私募在证券私募中的占比从2017年的不足5%提升至约27%，这一趋势充分说明了量化投资正在成为机构投资者和高净值人群资产配置中越来越重要的组成部分。</p>
+        </div>
+
+        <!-- Industry Tiers -->
+        <h3 style="font-size:17px; font-weight:700; color:var(--ink); margin: 32px 0 16px; font-family:'Noto Serif SC',serif;">行业分层结构</h3>
+
+        <div class="tier-list">
+            <div class="tier-row">
+                <div class="tier-badge t1">百亿级</div>
+                <div class="tier-info">
+                    <div class="tier-name">管理规模 &ge; 100亿元</div>
+                    <div class="tier-desc">代表机构：九坤、进化论、顽岩、幻方量化、明汯、灵均、九章等</div>
+                </div>
+                <div class="tier-count">约 20-30 家</div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge t2">50-100亿</div>
+                <div class="tier-info">
+                    <div class="tier-name">管理规模 50-100亿元</div>
+                    <div class="tier-desc">快速发展期机构，部分具有冲击百亿的潜力</div>
+                </div>
+                <div class="tier-count">约 30-40 家</div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge t3">20-50亿</div>
+                <div class="tier-info">
+                    <div class="tier-name">管理规模 20-50亿元</div>
+                    <div class="tier-desc">中型机构，策略各有特色，是尽调挖掘的重点区间</div>
+                </div>
+                <div class="tier-count">约 50-80 家</div>
+            </div>
+            <div class="tier-row">
+                <div class="tier-badge t4">20亿以下</div>
+                <div class="tier-info">
+                    <div class="tier-name">管理规模 &lt; 20亿元</div>
+                    <div class="tier-desc">数量众多，质量参差不齐，需谨慎甄别</div>
+                </div>
+                <div class="tier-count">数百家</div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>配置建议：</strong>对于家族办公室而言，建议优先关注百亿级和50-100亿梯队的机构。大型机构在投研体系、风控基础设施、团队稳定性方面更具优势。同时可适当关注20-50亿区间中策略特色鲜明、团队背景优秀的精品机构，以获取差异化收益来源。</p>
+        </div>
+    </div>
+
+    <!-- Section 5: Three Principles -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">五</div>
+            <h2>量化投资的三大投资原则</h2>
+        </div>
+
+        <div class="text-block">
+            <p>参考九坤投资的投资理念，优秀的量化机构通常秉持三大核心原则。理解这些原则，有助于投资顾问识别真正具有长期价值的量化管理人。</p>
+        </div>
+
+        <div class="principles">
+            <div class="principle-card">
+                <div class="principle-icon">&#128300;</div>
+                <h4>坚持科学</h4>
+                <p>以科学的方法捕捉投资机会，坚持数据为本，洞察市场规律。量化投资的本质是科学研究方法在投资领域的应用——提出假设、构建模型、回测验证、持续迭代。优秀的量化机构会不断投入资源完善投研体系，追求对市场更深入、更精确的理解。</p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon">&#9203;</div>
+                <h4>长期主义</h4>
+                <p>回避风格择时，减少被短期市场波动干扰，不断积累确定性的 Alpha 机会。量化投资的优势在于长期稳定的超额收益积累，而非短期暴利。优秀的量化机构不会因为短期的市场风格变化而频繁调整策略方向，而是坚持自身的能力圈，通过持续迭代获取长期复利回报。</p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon">&#9878;</div>
+                <h4>稳健理性</h4>
+                <p>审慎平衡投资风险与收益，持续增强内控管理能力。量化投资不是赌博，稳健是长期生存的前提。优秀的机构在追求收益的同时，会将风险管理放在同等甚至更高的位置，通过严格的风控体系和内控机制确保产品在不同市场环境下的稳健表现。</p>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <div class="insight-label">尽调视角</div>
+            <p>在评估量化基金经理时，可以用这三大原则作为"试金石"：<strong>科学性</strong>体现在投研体系的完善程度和技术投入的深度；<strong>长期性</strong>体现在策略的一致性和不追风口的态度；<strong>稳健性</strong>体现在风控体系的严谨程度和历史回撤的控制能力。</p>
+        </div>
+    </div>
+
+    <!-- Section 6: Glossary -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-num">六</div>
+            <h2>关键术语速查表</h2>
+        </div>
+
+        <div class="text-block">
+            <p>以下是量化投资中最核心的专业术语。建议在本教程的学习过程中反复查阅，确保对这些基础概念有清晰准确的理解。</p>
+        </div>
+
+        <div class="glossary">
+            <div class="glossary-header">
+                <h3>核心术语速查</h3>
+                <p>掌握这些术语，是理解量化基金产品资料和尽调沟通的基础</p>
+            </div>
+            <table class="glossary-table">
+                <tr>
+                    <td>Alpha<span class="en-name">阿尔法</span></td>
+                    <td>超越市场基准的<strong>超额收益</strong>。例如某产品年化收益15%，同期沪深300指数涨幅8%，则Alpha为7%。Alpha是衡量基金经理主动管理能力的核心指标。</td>
+                </tr>
+                <tr>
+                    <td>Beta<span class="en-name">贝塔</span></td>
+                    <td>与市场整体波动相关的<strong>系统性收益</strong>。代表投资组合对市场涨跌的敏感程度。Beta=1意味着与市场同步涨跌，Beta=0.5意味着市场涨1%时组合涨0.5%。</td>
+                </tr>
+                <tr>
+                    <td>超额收益<span class="en-name">Excess Return</span></td>
+                    <td>产品收益减去基准指数收益的差额。是评价量化策略有效性的核心指标。例如中证500指数增强策略的超额收益 = 产品收益 - 中证500指数收益。
+                    <div class="formula">超额收益 = 产品收益率 - 基准指数收益率</div></td>
+                </tr>
+                <tr>
+                    <td>夏普比率<span class="en-name">Sharpe Ratio</span></td>
+                    <td>每承担一单位总风险所获得的超额收益，是衡量风险调整后收益的核心指标。夏普比率越高，说明获取同等收益承担的风险越小。通常夏普比率&gt;1为良好，&gt;2为优秀。
+                    <div class="formula">夏普比率 = (年化收益 - 无风险利率) / 年化波动率</div></td>
+                </tr>
+                <tr>
+                    <td>最大回撤<span class="en-name">Max Drawdown</span></td>
+                    <td>净值从历史最高点到后续最低点的<strong>最大跌幅</strong>。是衡量投资风险最直观的指标，反映了投资者在最坏情况下可能面临的最大亏损。例如最大回撤-15%，意味着净值曾从最高点下跌了15%。</td>
+                </tr>
+                <tr>
+                    <td>收益回撤比<span class="en-name">Return/Drawdown</span></td>
+                    <td>年化收益与最大回撤绝对值的比值，衡量每承受一单位最大可能亏损所获得的年化收益。收益回撤比越高，投资性价比越好。通常&gt;1为可接受，&gt;2为优秀。
+                    <div class="formula">收益回撤比 = 年化收益 / |最大回撤|</div></td>
+                </tr>
+                <tr>
+                    <td>年化波动率<span class="en-name">Annual Volatility</span></td>
+                    <td>收益率的标准差（年度化），衡量收益波动的剧烈程度。波动率越高，说明净值上下波动越大，投资体验越"颠簸"。年化波动率10%意味着收益有大约68%的概率在均值&plusmn;10%范围内。
+                    <div class="formula">年化波动率 = 日收益率标准差 &times; &#8730;242</div></td>
+                </tr>
+                <tr>
+                    <td>月胜率<span class="en-name">Monthly Win Rate</span></td>
+                    <td>正收益月份占总月份的比例。月胜率80%意味着在过去统计区间内，每10个月中有8个月实现了正收益。月胜率越高，投资体验越平稳，适合追求稳健回报的投资者。</td>
+                </tr>
+                <tr>
+                    <td>基差<span class="en-name">Basis</span></td>
+                    <td>期货价格与现货价格之间的差额。当期货价格低于现货价格时称为"贴水"（负基差），是量化对冲策略的主要成本来源。基差波动直接影响市场中性策略的收益表现。</td>
+                </tr>
+                <tr>
+                    <td>对冲<span class="en-name">Hedging</span></td>
+                    <td>通过持有与现货头寸方向相反的衍生品（如股指期货、期权），抵消市场系统性风险的操作。对冲的目的是剥离Beta（市场涨跌的影响），只保留Alpha（超额收益）。</td>
+                </tr>
+                <tr>
+                    <td>因子<span class="en-name">Factor</span></td>
+                    <td>影响股票收益的可量化特征或变量。常见的因子包括：估值因子（PE、PB）、动量因子（过去N日涨跌幅）、质量因子（ROE、盈利稳定性）等。因子是量化模型预测股票收益的"输入变量"。</td>
+                </tr>
+                <tr>
+                    <td>换手率<span class="en-name">Turnover Rate</span></td>
+                    <td>一定期间内买卖证券总量与持仓市值的比例。高换手率（如年化30-50倍）通常对应高频策略（如T0、短周期因子），低换手率（如年化3-8倍）对应中低频策略（如基本面量化）。换手率直接影响交易成本。</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chapter Navigation -->
+<div class="chapter-nav">
+    <a href="index.html" class="prev">
+        <div class="nav-arrow">&#8592;</div>
+        <div class="nav-info">
+            <div class="nav-direction">上一章</div>
+            <div class="nav-title">返回首页</div>
+        </div>
+    </a>
+    <a href="02-策略全景图.html" class="next">
+        <div class="nav-info">
+            <div class="nav-direction">下一章</div>
+            <div class="nav-title">策略全景图</div>
+        </div>
+        <div class="nav-arrow">&#8594;</div>
+    </a>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>量化基金投资系统培训教程 &middot; 仅供内部学习参考 &middot; 不构成任何投资建议</p>
+</footer>
+
+<!-- Reading Progress Script -->
+<script>
+(function() {
+    var bar = document.getElementById('progressBar');
+    window.addEventListener('scroll', function() {
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        bar.style.width = Math.min(progress, 100) + '%';
+    });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>因子与模型 — 量化基金投资培训教程</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --ink: #0f172a;
+            --slate: #334155;
+            --muted: #64748b;
+            --silver: #94a3b8;
+            --fog: #e2e8f0;
+            --snow: #f8fafc;
+            --accent: #667eea;
+            --accent-deep: #764ba2;
+            --accent-glow: rgba(102, 126, 234, 0.15);
+            --warm: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --card-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.04);
+            --card-shadow-hover: 0 4px 12px rgba(102,126,234,0.12), 0 16px 48px rgba(15,23,42,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--ink);
+            background: var(--snow);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Navigation ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(248,250,252,0.85);
+            backdrop-filter: blur(16px) saturate(1.4);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px; height: 56px;
+        }
+        .nav-brand {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700; font-size: 16px; color: var(--ink);
+            letter-spacing: 0.02em;
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 6px; }
+        .nav-links a {
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            text-decoration: none; padding: 6px 12px; border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); background: var(--accent-glow); }
+        .nav-links a.active {
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            font-weight: 600;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            position: relative;
+            min-height: 420px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            padding: 100px 32px 60px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 40%, rgba(102,126,234,0.08), transparent),
+                radial-gradient(ellipse 70% 50% at 80% 60%, rgba(118,75,162,0.06), transparent),
+                linear-gradient(180deg, var(--snow) 0%, #f1f5f9 100%);
+        }
+        .hero-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(102,126,234,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102,126,234,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
+        }
+        .hero-content {
+            position: relative; text-align: center; max-width: 720px;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+            color: var(--accent); text-transform: uppercase;
+            background: var(--accent-glow);
+            padding: 6px 16px; border-radius: 100px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(102,126,234,0.12);
+        }
+        .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+        .hero h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 900; line-height: 1.2;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 17px; color: var(--muted); line-height: 1.8;
+            max-width: 560px; margin: 0 auto;
+        }
+
+        /* ── Content Layout ── */
+        .content-wrap {
+            max-width: 1200px; margin: 0 auto; padding: 0 32px;
+        }
+
+        /* ── Section ── */
+        .section {
+            margin-bottom: 72px;
+            opacity: 0; transform: translateY(24px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+        .section:nth-child(1) { animation-delay: 0.05s; }
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.15s; }
+        .section:nth-child(4) { animation-delay: 0.2s; }
+        .section:nth-child(5) { animation-delay: 0.25s; }
+        .section:nth-child(6) { animation-delay: 0.3s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        .section-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 32px;
+        }
+        .section-num {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 12px; font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            padding: 6px 14px; border-radius: 8px;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+        .section-header h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 26px; font-weight: 700; color: var(--ink);
+            line-height: 1.3;
+        }
+
+        /* ── Subsection ── */
+        .subsection {
+            margin-bottom: 36px;
+        }
+        .subsection-title {
+            font-size: 18px; font-weight: 700; color: var(--accent-deep);
+            margin-bottom: 16px; padding-left: 14px;
+            border-left: 4px solid var(--accent-deep);
+            line-height: 1.4;
+        }
+
+        /* ── Cards & Containers ── */
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+        }
+        .card:hover {
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.12);
+        }
+
+        .card-grid {
+            display: grid; gap: 20px;
+        }
+        .card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .card-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        /* ── Callout ── */
+        .callout {
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 20px 0;
+            display: flex; gap: 14px;
+            align-items: flex-start;
+        }
+        .callout-icon {
+            flex-shrink: 0;
+            font-size: 20px;
+            margin-top: 2px;
+        }
+        .callout-body { flex: 1; }
+        .callout-title {
+            font-weight: 700; font-size: 14px; margin-bottom: 4px;
+        }
+        .callout-text {
+            font-size: 14px; line-height: 1.7;
+        }
+        .callout-blue {
+            background: rgba(102,126,234,0.06);
+            border: 1px solid rgba(102,126,234,0.12);
+        }
+        .callout-blue .callout-title { color: var(--accent); }
+        .callout-blue .callout-text { color: var(--slate); }
+        .callout-amber {
+            background: rgba(245,158,11,0.06);
+            border: 1px solid rgba(245,158,11,0.15);
+        }
+        .callout-amber .callout-title { color: #b45309; }
+        .callout-amber .callout-text { color: var(--slate); }
+        .callout-purple {
+            background: rgba(118,75,162,0.06);
+            border: 1px solid rgba(118,75,162,0.12);
+        }
+        .callout-purple .callout-title { color: var(--accent-deep); }
+        .callout-purple .callout-text { color: var(--slate); }
+
+        /* ── Info Box ── */
+        .info-box {
+            background: white;
+            border-radius: 14px;
+            padding: 24px 28px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            margin: 20px 0;
+        }
+        .info-box h4 {
+            font-size: 15px; font-weight: 700; color: var(--ink);
+            margin-bottom: 10px;
+        }
+        .info-box p, .info-box li {
+            font-size: 14px; color: var(--slate); line-height: 1.7;
+        }
+
+        /* ── Bullet list ── */
+        .bullet-list {
+            list-style: none; padding: 0;
+        }
+        .bullet-list li {
+            position: relative;
+            padding-left: 20px;
+            font-size: 14px; color: var(--slate);
+            line-height: 1.8;
+            margin-bottom: 6px;
+        }
+        .bullet-list li::before {
+            content: '';
+            position: absolute; left: 0; top: 10px;
+            width: 8px; height: 8px; border-radius: 3px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+        }
+
+        /* ── Table ── */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--fog);
+            box-shadow: var(--card-shadow);
+            margin: 20px 0;
+        }
+        table {
+            width: 100%; border-collapse: collapse;
+            font-size: 14px;
+        }
+        thead {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+        }
+        thead th {
+            color: white; font-weight: 600;
+            padding: 14px 18px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        tbody td {
+            padding: 13px 18px;
+            border-bottom: 1px solid var(--fog);
+            color: var(--slate);
+            vertical-align: top;
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: rgba(102,126,234,0.03); }
+
+        /* ── Pipeline (Visual Flow) ── */
+        .pipeline {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            margin: 28px 0;
+        }
+        .pipeline-step {
+            flex: 1;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            padding: 22px 18px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .pipeline-step:first-child { border-radius: 14px 0 0 14px; }
+        .pipeline-step:last-child { border-radius: 0 14px 14px 0; }
+        .pipeline-step:hover {
+            box-shadow: var(--card-shadow-hover);
+            z-index: 2;
+        }
+        .pipeline-step-num {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: white; font-weight: 700; font-size: 13px;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 10px;
+        }
+        .pipeline-step-title {
+            font-size: 14px; font-weight: 700; color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .pipeline-step-desc {
+            font-size: 12px; color: var(--muted); line-height: 1.6;
+        }
+        .pipeline-arrow {
+            display: flex; align-items: center; justify-content: center;
+            width: 32px; flex-shrink: 0;
+            color: var(--accent); font-size: 18px; font-weight: 700;
+        }
+
+        /* ── Factor Category Card ── */
+        .factor-card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            transition: all 0.35s;
+            position: relative;
+            overflow: hidden;
+        }
+        .factor-card::after {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-deep));
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .factor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(102,126,234,0.15);
+        }
+        .factor-card:hover::after { opacity: 1; }
+        .factor-card-icon {
+            font-size: 28px; margin-bottom: 12px;
+            display: block; line-height: 1;
+        }
+        .factor-card h4 {
+            font-size: 16px; font-weight: 700; color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .factor-card .weight-badge {
+            display: inline-block;
+            font-size: 11px; font-weight: 700;
+            padding: 3px 10px; border-radius: 100px;
+            margin-bottom: 10px;
+        }
+        .weight-high {
+            background: rgba(102,126,234,0.1);
+            color: var(--accent);
+        }
+        .weight-mid {
+            background: rgba(16,185,129,0.1);
+            color: #059669;
+        }
+        .weight-low {
+            background: rgba(245,158,11,0.1);
+            color: #b45309;
+        }
+        .factor-card p {
+            font-size: 13px; color: var(--muted); line-height: 1.7;
+        }
+        .factor-card ul {
+            list-style: none; padding: 0; margin-top: 8px;
+        }
+        .factor-card ul li {
+            font-size: 13px; color: var(--slate); line-height: 1.7;
+            padding-left: 16px; position: relative;
+        }
+        .factor-card ul li::before {
+            content: '\203A';
+            position: absolute; left: 0; color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* ── Life Cycle Bar ── */
+        .lifecycle {
+            display: flex;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: var(--card-shadow);
+        }
+        .lifecycle-stage {
+            flex: 1;
+            padding: 20px 16px;
+            text-align: center;
+            color: white;
+            position: relative;
+            transition: flex 0.3s;
+        }
+        .lifecycle-stage:hover { flex: 1.3; }
+        .lifecycle-stage h5 {
+            font-size: 14px; font-weight: 700; margin-bottom: 4px;
+        }
+        .lifecycle-stage p {
+            font-size: 12px; opacity: 0.85; line-height: 1.5;
+        }
+        .stage-discover { background: linear-gradient(135deg, #667eea, #7c8cf8); }
+        .stage-validate { background: linear-gradient(135deg, #5a6fd6, #6e7de8); }
+        .stage-live    { background: linear-gradient(135deg, #4f60c8, #6070d8); }
+        .stage-decay   { background: linear-gradient(135deg, #764ba2, #8a5fb8); }
+
+        /* ── Logic Factor Steps ── */
+        .logic-steps {
+            display: flex; flex-direction: column; gap: 0;
+            margin: 20px 0;
+            position: relative;
+        }
+        .logic-steps::before {
+            content: '';
+            position: absolute;
+            left: 20px; top: 28px; bottom: 28px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-deep));
+        }
+        .logic-step {
+            display: flex; align-items: flex-start; gap: 18px;
+            padding: 16px 0;
+            position: relative;
+        }
+        .logic-step-dot {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: var(--accent);
+            flex-shrink: 0;
+            z-index: 1;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.15);
+        }
+        .logic-step-content {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid var(--fog);
+            box-shadow: var(--card-shadow);
+        }
+        .logic-step-content h5 {
+            font-size: 14px; font-weight: 700; color: var(--ink);
+            margin-bottom: 4px;
+        }
+        .logic-step-content p {
+            font-size: 13px; color: var(--muted); line-height: 1.6;
+        }
+
+        /* ── Comparison Row ── */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .compare-card {
+            border-radius: 14px;
+            padding: 24px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .compare-card h4 {
+            font-size: 15px; font-weight: 700; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .compare-card p, .compare-card li {
+            font-size: 13px; line-height: 1.7;
+        }
+
+        /* ── AI Grid ── */
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .ai-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px 20px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .ai-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-2px);
+        }
+        .ai-card-icon {
+            font-size: 32px; margin-bottom: 10px; display: block;
+        }
+        .ai-card h5 {
+            font-size: 14px; font-weight: 700; color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .ai-card p {
+            font-size: 12px; color: var(--muted); line-height: 1.6;
+        }
+
+        /* ── Capacity Bar ── */
+        .capacity-bars {
+            margin: 20px 0;
+        }
+        .capacity-row {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 14px;
+        }
+        .capacity-label {
+            width: 120px; flex-shrink: 0;
+            font-size: 13px; font-weight: 600; color: var(--slate);
+            text-align: right;
+        }
+        .capacity-track {
+            flex: 1; height: 32px;
+            background: var(--fog);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        .capacity-fill {
+            height: 100%;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 12px;
+            font-size: 11px; font-weight: 700; color: white;
+            transition: width 1s ease;
+        }
+        .fill-smallest { background: linear-gradient(90deg, #667eea, #7c8cf8); width: 20%; }
+        .fill-small    { background: linear-gradient(90deg, #5a6fd6, #6e7de8); width: 40%; }
+        .fill-medium   { background: linear-gradient(90deg, #4f60c8, #6070d8); width: 65%; }
+        .fill-large    { background: linear-gradient(90deg, #764ba2, #8a5fb8); width: 90%; }
+
+        /* ── Model Combo Cards ── */
+        .model-combo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .model-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .model-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+        }
+        .model-card.linear::before {
+            background: linear-gradient(90deg, var(--accent), #8b9cf8);
+        }
+        .model-card.nonlinear::before {
+            background: linear-gradient(90deg, var(--accent-deep), #a855f7);
+        }
+        .model-card h4 {
+            font-size: 16px; font-weight: 700; color: var(--ink);
+            margin-bottom: 8px;
+        }
+        .model-card p {
+            font-size: 13px; color: var(--slate); line-height: 1.7;
+        }
+        .model-tag {
+            display: inline-block;
+            font-size: 11px; font-weight: 600;
+            padding: 3px 10px; border-radius: 100px;
+            margin-top: 10px;
+        }
+        .tag-linear { background: rgba(102,126,234,0.1); color: var(--accent); }
+        .tag-nonlinear { background: rgba(118,75,162,0.1); color: var(--accent-deep); }
+
+        /* ── JiuKun Compare ── */
+        .jiukun-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin: 20px 0;
+        }
+        .jiukun-side {
+            padding: 28px;
+        }
+        .jiukun-side.legacy {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border-right: 1px solid rgba(0,0,0,0.06);
+        }
+        .jiukun-side.ai-era {
+            background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05));
+        }
+        .jiukun-side h4 {
+            font-size: 15px; font-weight: 700; margin-bottom: 12px;
+        }
+        .jiukun-side .legacy h4 { color: var(--slate); }
+        .jiukun-side ul {
+            list-style: none; padding: 0;
+        }
+        .jiukun-side ul li {
+            font-size: 13px; color: var(--slate); line-height: 1.7;
+            padding-left: 18px; position: relative;
+            margin-bottom: 4px;
+        }
+        .jiukun-side ul li::before {
+            content: '';
+            position: absolute; left: 0; top: 9px;
+            width: 8px; height: 8px; border-radius: 50%;
+        }
+        .jiukun-side.legacy ul li::before { background: var(--silver); }
+        .jiukun-side.ai-era ul li::before { background: var(--accent); }
+
+        /* ── Nav Prev/Next ── */
+        .page-nav {
+            display: flex; justify-content: space-between;
+            max-width: 1200px; margin: 0 auto; padding: 48px 32px;
+            gap: 20px;
+        }
+        .page-nav a {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+            background: white;
+            border-radius: 12px;
+            padding: 18px 24px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+            flex: 1;
+            max-width: 300px;
+        }
+        .page-nav a:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-2px);
+            border-color: rgba(102,126,234,0.15);
+        }
+        .page-nav a.next { margin-left: auto; text-align: right; flex-direction: row-reverse; }
+        .page-nav .pn-label {
+            font-size: 11px; font-weight: 600; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .page-nav .pn-title {
+            font-size: 15px; font-weight: 700; color: var(--ink);
+            margin-top: 2px;
+        }
+        .page-nav .pn-arrow {
+            font-size: 20px; color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* ── Footer ── */
+        footer {
+            max-width: 1200px; margin: 0 auto; padding: 32px;
+            border-top: 1px solid var(--fog);
+            text-align: center;
+        }
+        footer p { font-size: 12px; color: var(--silver); }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .card-grid-2, .card-grid-3, .card-grid-4 { grid-template-columns: 1fr; }
+            .compare-grid, .model-combo, .jiukun-compare { grid-template-columns: 1fr; }
+            .ai-grid { grid-template-columns: repeat(2, 1fr); }
+            .pipeline { flex-direction: column; }
+            .pipeline-arrow { transform: rotate(90deg); width: auto; height: 24px; }
+            .pipeline-step { border-radius: 0; }
+            .pipeline-step:first-child { border-radius: 14px 14px 0 0; }
+            .pipeline-step:last-child { border-radius: 0 0 14px 14px; }
+        }
+        @media (max-width: 640px) {
+            .nav-links { display: none; }
+            .hero { min-height: 340px; padding: 100px 20px 40px; }
+            .content-wrap { padding: 0 20px; }
+            .ai-grid { grid-template-columns: 1fr; }
+            .lifecycle { flex-direction: column; }
+            .page-nav { flex-direction: column; padding: 32px 20px; }
+            .page-nav a, .page-nav a.next { max-width: none; }
+        }
+
+        @media print {
+            nav { position: static; border: none; }
+            .hero { min-height: auto; padding: 20px; }
+            .hero::before, .hero-grid { display: none; }
+            .section { opacity: 1; transform: none; animation: none; }
+            .card, .factor-card, .ai-card { box-shadow: none; break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+    <div class="nav-inner">
+        <a href="index.html" class="nav-brand">量化基金培训</a>
+        <div class="nav-links">
+            <a href="01-量化投资基础.html">基础原理</a>
+            <a href="02-策略全景图.html">策略全景</a>
+            <a href="03-因子与模型.html" class="active">因子模型</a>
+            <a href="04-风险管理.html">风险管理</a>
+            <a href="05-基金经理评估.html">经理评估</a>
+            <a href="06-机构图谱.html">机构图谱</a>
+            <a href="07-配置框架.html">配置框架</a>
+            <a href="08-案例实战.html">案例实战</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+        <div class="hero-badge">Chapter 03 · 因子与模型</div>
+        <h1>因子投资与<em>量化模型</em></h1>
+        <p>深入理解因子的分类体系、挖掘方法和模型构建流程，掌握 AI 在量化投资中的前沿应用</p>
+    </div>
+</section>
+
+<div class="content-wrap">
+
+<!-- ════════════════════════════════════════════ -->
+<!-- Section 1: Factor Investment Core Concepts  -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header">
+        <span class="section-num">SECTION 01</span>
+        <h2>因子投资的核心概念</h2>
+    </div>
+
+    <div class="card" style="margin-bottom: 24px;">
+        <h4 style="font-size:16px; font-weight:700; color:var(--ink); margin-bottom:12px;">
+            &#128270; 什么是因子？
+        </h4>
+        <p style="font-size:14px; color:var(--slate); line-height:1.8;">
+            将市场规律量化为可度量的信号。就像 PE 投资中看<strong>"赛道"、"团队"、"财务模型"</strong>一样，量化投资把影响股票收益的因素量化为<strong>"因子"</strong>。因子是量化投资最核心的生产资料，是策略获取超额收益的源头。
+        </p>
+    </div>
+
+    <div class="card" style="margin-bottom: 24px;">
+        <h4 style="font-size:16px; font-weight:700; color:var(--ink); margin-bottom:12px;">
+            &#128161; 因子的本质
+        </h4>
+        <p style="font-size:14px; color:var(--slate); line-height:1.8;">
+            因子的本质是对市场规律的<strong>发现、归纳、应用和探索</strong>。一个好的因子不仅仅是一个统计规律，更是对市场运行机制的深层理解。因子投资的核心在于找到能够持续解释股票收益差异的可量化特征。
+        </p>
+    </div>
+
+    <!-- Life Cycle -->
+    <div class="subsection">
+        <div class="subsection-title">单因子的生命周期</div>
+        <p style="font-size:14px; color:var(--muted); margin-bottom:14px;">每一个因子都经历从发现到衰减的自然演化过程：</p>
+        <div class="lifecycle">
+            <div class="lifecycle-stage stage-discover">
+                <h5>&#128269; 发现阶段</h5>
+                <p>研究者发现新的市场规律或异常现象</p>
+            </div>
+            <div class="lifecycle-stage stage-validate">
+                <h5>&#9989; 验证阶段</h5>
+                <p>回测检验，排除数据挖掘偏差</p>
+            </div>
+            <div class="lifecycle-stage stage-live">
+                <h5>&#128640; 实盘阶段</h5>
+                <p>投入实盘交易，产生超额收益</p>
+            </div>
+            <div class="lifecycle-stage stage-decay">
+                <h5>&#128201; 衰减阶段</h5>
+                <p>因子被广泛使用，Alpha 逐渐衰减</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Callout -->
+    <div class="callout callout-amber">
+        <div class="callout-icon">&#9888;&#65039;</div>
+        <div class="callout-body">
+            <div class="callout-title">进化论的警示</div>
+            <div class="callout-text">
+                <strong>"任何模型都是对现实世界的简化"</strong>。统计类因子在极端市场环境下可能失效。当市场发生结构性变化时，基于历史数据统计得出的规律可能不再适用。因此，持续的研究投入和对因子有效性的动态监控至关重要。
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- Section 2: Factor Classification System     -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header">
+        <span class="section-num">SECTION 02</span>
+        <h2>因子分类体系</h2>
+    </div>
+
+    <div class="card-grid card-grid-2" style="margin-bottom: 24px;">
+        <!-- 量价因子 -->
+        <div class="factor-card">
+            <span class="factor-card-icon">&#128200;</span>
+            <h4>量价因子</h4>
+            <span class="weight-badge weight-high">约占 90% 权重（以顽岩为例）</span>
+            <p style="margin-bottom:10px;">基于股票的价格和成交量数据计算，捕捉市场的短期定价偏差。</p>
+            <ul>
+                <li>信息更新及时，能快速捕捉市场动态</li>
+                <li><strong>动量因子</strong>：捕捉价格趋势延续性</li>
+                <li><strong>反转因子</strong>：捕捉价格过度反应后的回归</li>
+                <li><strong>波动率因子</strong>：基于价格波动特征</li>
+                <li><strong>流动性因子</strong>：基于成交量和换手率</li>
+            </ul>
+        </div>
+
+        <!-- 基本面因子 -->
+        <div class="factor-card">
+            <span class="factor-card-icon">&#128176;</span>
+            <h4>基本面因子</h4>
+            <span class="weight-badge weight-mid">约占 10% 权重</span>
+            <p style="margin-bottom:10px;">基于公司财务数据（ROE、营收增长、利润率等）计算。</p>
+            <ul>
+                <li>承载容量大，适合大资金运作</li>
+                <li>与量价因子相关性低，分散效果好</li>
+                <li>在换手频率上与量价因子互补</li>
+                <li>丰富收益来源，提升策略稳定性</li>
+            </ul>
+        </div>
+
+        <!-- 另类数据因子 -->
+        <div class="factor-card">
+            <span class="factor-card-icon">&#128752;</span>
+            <h4>另类数据因子</h4>
+            <span class="weight-badge weight-low">新兴方向</span>
+            <p style="margin-bottom:10px;">利用非传统数据源构造差异化因子：</p>
+            <ul>
+                <li>卫星图像 — 监测经济活动</li>
+                <li>社交媒体 — 捕捉市场情绪</li>
+                <li>供应链数据 — 分析产业链关系</li>
+                <li>物流航运 — 跟踪贸易活动</li>
+                <li>天气数据 — 预测农产品等品种</li>
+            </ul>
+            <p style="margin-top:8px;">通过 NLP、CV 等技术处理，构造差异化因子，形成金融知识图谱。</p>
+        </div>
+
+        <!-- 逻辑类因子 -->
+        <div class="factor-card">
+            <span class="factor-card-icon">&#129504;</span>
+            <h4>逻辑类因子（进化论特色）</h4>
+            <span class="weight-badge weight-low">进化论优势</span>
+            <p style="margin-bottom:10px;">区别于统计类因子的"数据驱动"，逻辑类因子来自对市场运行底层逻辑的理解。</p>
+            <ul>
+                <li>在极端市场环境下更稳健</li>
+                <li>策略拥挤度低，衰减更慢</li>
+                <li>可解释性强，便于风控管理</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Logic Factor Construction Process -->
+    <div class="subsection">
+        <div class="subsection-title">逻辑类因子的构建过程 — 孟德尔豌豆实验类比</div>
+        <p style="font-size:14px; color:var(--muted); margin-bottom:16px;">
+            正如孟德尔通过严谨的科学方法发现遗传规律，逻辑因子的构建同样遵循系统化的研究路径：
+        </p>
+        <div class="logic-steps">
+            <div class="logic-step">
+                <div class="logic-step-dot">1</div>
+                <div class="logic-step-content">
+                    <h5>&#128065; 观察现象</h5>
+                    <p>分析特定市场现象，发现规律性的市场异象或行为模式</p>
+                </div>
+            </div>
+            <div class="logic-step">
+                <div class="logic-step-dot">2</div>
+                <div class="logic-step-content">
+                    <h5>&#128161; 提出假设</h5>
+                    <p>基于市场运行逻辑，提出合理的因果解释假设</p>
+                </div>
+            </div>
+            <div class="logic-step">
+                <div class="logic-step-dot">3</div>
+                <div class="logic-step-content">
+                    <h5>&#128230; 收集数据</h5>
+                    <p>收集相关数据并进行清洗、整理和标准化处理</p>
+                </div>
+            </div>
+            <div class="logic-step">
+                <div class="logic-step-dot">4</div>
+                <div class="logic-step-content">
+                    <h5>&#9989; 验证假设</h5>
+                    <p>对实际数据进行逻辑解释，验证假设的成立性和统计显著性</p>
+                </div>
+            </div>
+            <div class="logic-step">
+                <div class="logic-step-dot">5</div>
+                <div class="logic-step-content">
+                    <h5>&#9889; 形成因子</h5>
+                    <p>生成逻辑因子，纳入因子库用于实盘交易</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Table -->
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>因子类型</th>
+                    <th>数据来源</th>
+                    <th>权重占比</th>
+                    <th>核心优势</th>
+                    <th>典型代表</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>量价因子</strong></td>
+                    <td>价格、成交量</td>
+                    <td>~90%</td>
+                    <td>更新及时，捕捉短期偏差</td>
+                    <td>动量、反转、波动率</td>
+                </tr>
+                <tr>
+                    <td><strong>基本面因子</strong></td>
+                    <td>公司财报</td>
+                    <td>~10%</td>
+                    <td>容量大，与量价互补</td>
+                    <td>ROE、营收增长</td>
+                </tr>
+                <tr>
+                    <td><strong>另类数据因子</strong></td>
+                    <td>非传统数据</td>
+                    <td>新兴</td>
+                    <td>差异化，信息优势</td>
+                    <td>卫星图像、社交数据</td>
+                </tr>
+                <tr>
+                    <td><strong>逻辑类因子</strong></td>
+                    <td>市场逻辑推导</td>
+                    <td>进化论特色</td>
+                    <td>极端环境稳健</td>
+                    <td>市场结构因子</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- Section 3: Factor Mining & Production       -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header">
+        <span class="section-num">SECTION 03</span>
+        <h2>因子挖掘与生产</h2>
+    </div>
+
+    <div class="card-grid card-grid-3" style="margin-bottom: 24px;">
+        <!-- 人工挖掘 -->
+        <div class="factor-card">
+            <span class="factor-card-icon">&#128100;</span>
+            <h4>人工挖掘</h4>
+            <p style="margin-bottom:10px;">量化研究员根据市场分析进行人工构造。</p>
+            <div class="callout callout-blue" style="padding:12px 14px; margin:10px 0 0 0;">
+                <div class="callout-text" style="font-size:12px;">
+                    <strong>顽岩：</strong>"量价特征构造 — 量化研究员根据市场分析进行人工构造"
+                </div>
+            </div>
+            <p style="margin-top:10px; font-size:13px; color:var(--green); font-weight:600;">
+                &#10003; 可解释性强，逻辑清晰
+            </p>
+        </div>
+
+        <!-- 机器挖掘 -->
+        <div class="factor-card">
+            <span class="factor-card-icon">&#129302;</span>
+            <h4>机器挖掘</h4>
+            <p style="margin-bottom:10px;">使用遗传算法、生成模型等技术自动发现因子。</p>
+            <div class="callout callout-purple" style="padding:12px 14px; margin:10px 0 0 0;">
+                <div class="callout-text" style="font-size:12px;">
+                    <strong>顽岩：</strong>10000+ 特征数量
+                </div>
+            </div>
+            <p style="margin-top:10px; font-size:13px; color:var(--green); font-weight:600;">
+                &#10003; 覆盖面广，效率高
+            </p>
+        </div>
+
+        <!-- 混合模式 -->
+        <div class="factor-card">
+            <span class="factor-card-icon">&#127919;</span>
+            <h4>混合模式</h4>
+            <p style="margin-bottom:10px; font-weight:600; color:var(--accent);">主流做法：人工为主，机器为辅</p>
+            <div class="callout callout-blue" style="padding:12px 14px; margin:10px 0 0 0;">
+                <div class="callout-text" style="font-size:12px;">
+                    <strong>悦海盈和：</strong>"强调因子逻辑性，注重因子生命期，寻求因子层面的分散，不笃信高收益的单一信号或策略"
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="callout callout-blue">
+        <div class="callout-icon">&#128218;</div>
+        <div class="callout-body">
+            <div class="callout-title">因子生产的关键原则</div>
+            <div class="callout-text">
+                无论采用哪种挖掘方式，核心原则是<strong>因子的逻辑性</strong>和<strong>因子的多样性</strong>。单一信号或策略无法持续产生超额收益，因子层面的充分分散才是长期致胜之道。
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- Section 4: Model Building Pipeline           -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header">
+        <span class="section-num">SECTION 04</span>
+        <h2>模型构建流程</h2>
+    </div>
+
+    <!-- Visual Pipeline -->
+    <div class="pipeline">
+        <div class="pipeline-step">
+            <div class="pipeline-step-num">1</div>
+            <div class="pipeline-step-title">数据采集与清洗</div>
+            <div class="pipeline-step-desc">量价 / 基本面 / 另类数据<br>&#8595; 清洗入库</div>
+        </div>
+        <div class="pipeline-arrow">&#10148;</div>
+        <div class="pipeline-step">
+            <div class="pipeline-step-num">2</div>
+            <div class="pipeline-step-title">特征工程</div>
+            <div class="pipeline-step-desc">提取数据集<br>统计 / AI 工具助力</div>
+        </div>
+        <div class="pipeline-arrow">&#10148;</div>
+        <div class="pipeline-step">
+            <div class="pipeline-step-num">3</div>
+            <div class="pipeline-step-title">模型训练</div>
+            <div class="pipeline-step-desc">训练集 / 测试集 / 验证集分离<br>统计 / AI 工具</div>
+        </div>
+        <div class="pipeline-arrow">&#10148;</div>
+        <div class="pipeline-step">
+            <div class="pipeline-step-num">4</div>
+            <div class="pipeline-step-title">组合优化</div>
+            <div class="pipeline-step-desc">自研优化器<br>风格约束 &amp; 行业暴露</div>
+        </div>
+        <div class="pipeline-arrow">&#10148;</div>
+        <div class="pipeline-step">
+            <div class="pipeline-step-num">5</div>
+            <div class="pipeline-step-title">交易执行</div>
+            <div class="pipeline-step-desc">自研交易系统<br>100% 程序化</div>
+        </div>
+    </div>
+
+    <!-- Pipeline Detail Table -->
+    <div class="table-wrap" style="margin-top: 24px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>阶段</th>
+                    <th>核心任务</th>
+                    <th>关键工具</th>
+                    <th>参考（顽岩）</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. 数据采集</strong></td>
+                    <td>多源数据获取与存储</td>
+                    <td>数据管道、清洗引擎</td>
+                    <td>量价 + 基本面 + 另类数据</td>
+                </tr>
+                <tr>
+                    <td><strong>2. 特征工程</strong></td>
+                    <td>因子提取与特征选择</td>
+                    <td>统计方法、AI 工具</td>
+                    <td>10000+ 特征数量</td>
+                </tr>
+                <tr>
+                    <td><strong>3. 模型训练</strong></td>
+                    <td>模型选择与参数优化</td>
+                    <td>ML/DL 框架</td>
+                    <td>训练/测试/验证三分离</td>
+                </tr>
+                <tr>
+                    <td><strong>4. 组合优化</strong></td>
+                    <td>权重分配与风险约束</td>
+                    <td>自研优化器</td>
+                    <td>SIZE 暴露 &#177;0.3std，行业暴露 2-5%</td>
+                </tr>
+                <tr>
+                    <td><strong>5. 交易执行</strong></td>
+                    <td>订单管理与执行优化</td>
+                    <td>自研交易系统</td>
+                    <td>100% 程序化交易</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Model Combination Strategy -->
+    <div class="subsection" style="margin-top: 32px;">
+        <div class="subsection-title">模型组合策略</div>
+        <p style="font-size:14px; color:var(--muted); margin-bottom:16px;">
+            主流量化机构通常采用<strong>线性 + 非线性</strong>的模型组合方式，两者互补：
+        </p>
+        <div class="model-combo">
+            <div class="model-card linear">
+                <h4>&#128202; 线性模型</h4>
+                <p>通过线性回归等方式将多因子信号线性组合。优势是<strong>增强超额收益的弹性与稳定性</strong>，模型结构简洁，可解释性强。</p>
+                <span class="model-tag tag-linear">弹性 + 稳定性</span>
+            </div>
+            <div class="model-card nonlinear">
+                <h4>&#129520; 非线性模型</h4>
+                <p>利用深度学习、树模型等捕捉因子间的非线性关系。优势是<strong>提升在行情切换中的适应能力，增厚差异化 Alpha</strong>。</p>
+                <span class="model-tag tag-nonlinear">适应力 + Alpha</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- Section 5: AI in Quantitative Investing      -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header">
+        <span class="section-num">SECTION 05</span>
+        <h2>AI 在量化投资中的应用</h2>
+    </div>
+
+    <div class="ai-grid">
+        <div class="ai-card">
+            <span class="ai-card-icon">&#128172;</span>
+            <h5>大语言模型 (NLU)</h5>
+            <p>处理文本数据，理解新闻情绪，分析研报观点，提取结构化信号</p>
+        </div>
+        <div class="ai-card">
+            <span class="ai-card-icon">&#128247;</span>
+            <h5>计算机视觉 (CV)</h5>
+            <p>处理卫星图像、财报图表，从视觉信息中提取投资信号</p>
+        </div>
+        <div class="ai-card">
+            <span class="ai-card-icon">&#9889;</span>
+            <h5>Transformer / DNN / LSTM</h5>
+            <p>更强大的序列建模和特征提取能力，捕捉复杂市场模式</p>
+        </div>
+        <div class="ai-card">
+            <span class="ai-card-icon">&#127793;</span>
+            <h5>LightGBM</h5>
+            <p>高效梯度提升树模型，在因子合成中表现优异，训练速度快</p>
+        </div>
+        <div class="ai-card">
+            <span class="ai-card-icon">&#127918;</span>
+            <h5>强化学习</h5>
+            <p>在环境交互中学习最优交易决策，动态调整策略参数</p>
+        </div>
+        <div class="ai-card">
+            <span class="ai-card-icon">&#128269;</span>
+            <h5>XAI (可解释 AI)</h5>
+            <p>帮助理解黑盒模型的决策逻辑，控制模型风险，满足合规要求</p>
+        </div>
+    </div>
+
+    <!-- JiuKun Case Study -->
+    <div class="subsection" style="margin-top: 28px;">
+        <div class="subsection-title">案例：九坤的 AI 应用 — 扩展传统量化边界</div>
+        <div class="jiukun-compare">
+            <div class="jiukun-side legacy">
+                <h4 style="color:var(--slate);">&#128217; 传统量化</h4>
+                <ul>
+                    <li>价量数据为主</li>
+                    <li>逻辑结构单一</li>
+                    <li>人工构建因子</li>
+                    <li>线性模型主导</li>
+                </ul>
+            </div>
+            <div class="jiukun-side ai-era">
+                <h4 style="color:var(--accent);">&#129302; AI 赋能</h4>
+                <ul>
+                    <li>多模态数据融合</li>
+                    <li>生成式模型自动发现因子</li>
+                    <li>非线性关系深度挖掘</li>
+                    <li>智能组合优化</li>
+                </ul>
+            </div>
+        </div>
+        <div class="callout callout-purple" style="margin-top:16px;">
+            <div class="callout-icon">&#128161;</div>
+            <div class="callout-body">
+                <div class="callout-title">AI 不是替代传统量化，而是扩展其边界</div>
+                <div class="callout-text">
+                    AI 技术的核心价值在于发现传统方法难以捕捉的复杂模式，处理更大规模和更多样化的数据，从而在因子发现和模型构建两个维度提升量化策略的 Alpha 能力。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- Section 6: Strategy Capacity & Scale         -->
+<!-- ════════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header">
+        <span class="section-num">SECTION 06</span>
+        <h2>策略容量与规模的关系</h2>
+    </div>
+
+    <div class="callout callout-amber" style="margin-bottom: 28px;">
+        <div class="callout-icon">&#9888;&#65039;</div>
+        <div class="callout-body">
+            <div class="callout-title">规模是收益的敌人</div>
+            <div class="callout-text">
+                管理规模越大，超额收益越难做。核心原因在于<strong>交易冲击成本增加</strong>和<strong>策略拥挤度上升</strong>。当大量资金追逐相同的 Alpha 源时，因子拥挤会导致超额收益快速衰减。
+            </div>
+        </div>
+    </div>
+
+    <!-- Capacity Bars -->
+    <div class="subsection">
+        <div class="subsection-title">各策略容量对比（从小到大）</div>
+        <div class="capacity-bars">
+            <div class="capacity-row">
+                <div class="capacity-label">T0 策略</div>
+                <div class="capacity-track">
+                    <div class="capacity-fill fill-smallest">容量最小</div>
+                </div>
+            </div>
+            <div class="capacity-row">
+                <div class="capacity-label">高频指增</div>
+                <div class="capacity-track">
+                    <div class="capacity-fill fill-small">容量较小</div>
+                </div>
+            </div>
+            <div class="capacity-row">
+                <div class="capacity-label">中低频指增</div>
+                <div class="capacity-track">
+                    <div class="capacity-fill fill-medium">容量中等</div>
+                </div>
+            </div>
+            <div class="capacity-row">
+                <div class="capacity-label">量化选股</div>
+                <div class="capacity-track">
+                    <div class="capacity-fill fill-large">容量最大</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scale Reference -->
+    <div class="table-wrap" style="margin-top: 20px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>机构</th>
+                    <th>管理规模（2026年2月）</th>
+                    <th>主要策略</th>
+                    <th>规模特征</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>顽岩</strong></td>
+                    <td>500 亿</td>
+                    <td>指数增强 + 量化选股</td>
+                    <td>规模最大，策略容量充裕</td>
+                </tr>
+                <tr>
+                    <td><strong>九坤</strong></td>
+                    <td>100 亿+</td>
+                    <td>多策略 + CTA</td>
+                    <td>规模适中，Alpha 空间充足</td>
+                </tr>
+                <tr>
+                    <td><strong>进化论</strong></td>
+                    <td>100 亿+</td>
+                    <td>逻辑因子 + 量化选股</td>
+                    <td>逻辑因子策略，拥挤度低</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout callout-blue" style="margin-top: 20px;">
+        <div class="callout-icon">&#128218;</div>
+        <div class="callout-body">
+            <div class="callout-title">家办配置提示</div>
+            <div class="callout-text">
+                在选择量化基金时，需关注管理规模与策略容量的匹配度。规模过大但策略容量有限的产品，其超额收益的持续性面临更大挑战。优先选择<strong>规模适中、策略容量充裕</strong>的管理人。
+            </div>
+        </div>
+    </div>
+</div>
+
+</div><!-- /content-wrap -->
+
+<!-- ── Page Navigation ── -->
+<div class="page-nav">
+    <a href="02-策略全景图.html">
+        <span class="pn-arrow">&#8592;</span>
+        <div>
+            <div class="pn-label">上一章</div>
+            <div class="pn-title">策略全景图</div>
+        </div>
+    </a>
+    <a href="04-风险管理.html" class="next">
+        <span class="pn-arrow">&#8594;</span>
+        <div>
+            <div class="pn-label">下一章</div>
+            <div class="pn-title">风险管理</div>
+        </div>
+    </a>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+    <p>量化基金投资系统培训教程 · 仅供内部学习参考 · 不构成任何投资建议</p>
+</footer>
+
+</body>
+</html>
