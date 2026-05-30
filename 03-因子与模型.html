@@ -230,6 +230,18 @@
         }
         .callout-purple .callout-title { color: var(--accent-deep); }
         .callout-purple .callout-text { color: var(--slate); }
+        .callout-green {
+            background: rgba(16,185,129,0.06);
+            border: 1px solid rgba(16,185,129,0.15);
+        }
+        .callout-green .callout-title { color: #059669; }
+        .callout-green .callout-text { color: var(--slate); }
+        .callout-red {
+            background: rgba(239,68,68,0.06);
+            border: 1px solid rgba(239,68,68,0.15);
+        }
+        .callout-red .callout-title { color: #dc2626; }
+        .callout-red .callout-text { color: var(--slate); }
 
         /* ── Info Box ── */
         .info-box {
@@ -737,6 +749,8 @@
         <a href="07-择时与配置.html">择时配置</a>
         <a href="08-配置框架.html">配置框架</a>
         <a href="09-案例实战.html">案例实战</a>
+        <a href="10-公募与私募.html">公募私募</a>
+        <a href="11-行业前沿.html">行业前沿</a>
     </div>
     </div>
 </nav>
@@ -973,6 +987,31 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- Factor Crowding Concept -->
+    <div class="callout callout-red" style="margin-top: 28px;">
+        <div class="callout-icon">&#9888;&#65039;</div>
+        <div class="callout-body">
+            <div class="callout-title">因子拥挤度 — 不可忽视的风险维度</div>
+            <div class="callout-text">
+                因子拥挤度是近年来日益受到关注的风险维度。当大量机构使用相同因子（如小市值因子）时，会产生<strong>"拥挤交易"风险</strong>。拥挤本身不可怕，<strong>踩踏才可怕</strong>。2024年初微盘股危机就是典型的因子拥挤 &rarr; 踩踏事件。评估基金时应关注其因子暴露是否过度集中。
+            </div>
+        </div>
+    </div>
+
+    <!-- Turnover & Alpha Source -->
+    <div class="callout callout-blue" style="margin-top: 16px;">
+        <div class="callout-icon">&#128200;</div>
+        <div class="callout-body">
+            <div class="callout-title">换手率与Alpha来源</div>
+            <div class="callout-text">
+                换手率是判断Alpha来源的重要指标。<strong>高换手率</strong>（年换手50-100倍）意味着Alpha主要来自量价因子和短期交易；<strong>低换手率</strong>（年换手5-15倍）则更多依赖基本面因子和长期持有。不同市场环境下，两种Alpha来源的表现差异显著：轮动分散阶段适合交易型Alpha，共识行情适合基本面Alpha。
+            </div>
+            <p style="font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px;">
+                —— 厚雪长波播客
+            </p>
+        </div>
     </div>
 </div>
 
@@ -1224,6 +1263,47 @@
             </div>
         </div>
     </div>
+
+    <!-- Fundamental vs Price-Volume Quant -->
+    <div class="subsection" style="margin-top: 36px;">
+        <div class="subsection-title">基本面量化 vs 量价量化</div>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 16px;">
+            量化策略按数据来源和交易方式，可分为两大流派。理解两者差异，有助于判断基金风格与自身配置需求的匹配度：
+        </p>
+        <div class="compare-grid">
+            <div class="compare-card" style="background: linear-gradient(135deg, rgba(16,185,129,0.04), rgba(16,185,129,0.08)); border: 1px solid rgba(16,185,129,0.15);">
+                <h4 style="color: #059669;">
+                    <span style="font-size: 18px;">&#128176;</span> 基本面量化（公募擅长）
+                </h4>
+                <ul class="bullet-list">
+                    <li>以<strong>财务数据、产业逻辑</strong>为核心</li>
+                    <li>长期持有、<strong>低换手率</strong></li>
+                    <li>代表：<strong>PB-ROE框架</strong>、质量因子</li>
+                    <li>优势：策略容量大、逻辑可解释</li>
+                </ul>
+            </div>
+            <div class="compare-card" style="background: linear-gradient(135deg, rgba(102,126,234,0.04), rgba(118,75,162,0.08)); border: 1px solid rgba(102,126,234,0.15);">
+                <h4 style="color: var(--accent);">
+                    <span style="font-size: 18px;">&#128200;</span> 量价量化（私募擅长）
+                </h4>
+                <ul class="bullet-list">
+                    <li>以<strong>交易数据、市场微观结构</strong>为核心</li>
+                    <li>高频交易、<strong>高换手率</strong></li>
+                    <li>代表：<strong>动量因子</strong>、日内策略</li>
+                    <li>优势：短期超额显著、AI赋能空间大</li>
+                </ul>
+            </div>
+        </div>
+        <div class="callout callout-blue" style="margin-top: 20px;">
+            <div class="callout-icon">&#128640;</div>
+            <div class="callout-body">
+                <div class="callout-title">当前趋势：双轮驱动格局</div>
+                <div class="callout-text">
+                    AI主线崛起+"双轮驱动"格局下，基本面量化和量价量化的边界正在模糊。头部机构正在尝试将基本面因子与量价因子融合，构建更全面的Alpha模型。
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- ════════════════════════════════════════════ -->
@@ -1242,6 +1322,126 @@
             <div class="callout-text">
                 管理规模越大，超额收益越难做。核心原因在于<strong>交易冲击成本增加</strong>和<strong>策略拥挤度上升</strong>。当大量资金追逐相同的 Alpha 源时，因子拥挤会导致超额收益快速衰减。
             </div>
+        </div>
+    </div>
+
+    <!-- Impossible Triangle Framework -->
+    <div class="info-box" style="border-left: 4px solid var(--accent-deep); background: linear-gradient(135deg, rgba(118,75,162,0.03), rgba(102,126,234,0.03));">
+        <h4 style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">&#9651;</span>
+            量化不可能三角
+        </h4>
+        <p style="font-size: 14px; color: var(--slate); line-height: 1.9; margin-bottom: 10px;">
+            量化投资存在一个固有的不可能三角——<strong>规模、业绩和回撤不可兼得</strong>。高频策略收益高但容量有限；低频策略能支撑更大规模但收益率较低、波动更大。过去短周期收益率太高，使长周期策略没有竞争力；随着市场有效性提高，短周期收益率明显下降，长周期策略的竞争力在逐步提高。
+        </p>
+        <p style="font-size: 12px; color: var(--muted); font-style: italic;">
+            —— 衍复投资 高亢
+        </p>
+    </div>
+
+    <!-- Strategy Capacity Assessment -->
+    <div class="subsection" style="margin-top: 32px;">
+        <div class="subsection-title">策略容量如何评估？</div>
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 16px;">
+            策略容量是量化投资的硬约束，以下方法可以帮助系统性地评估一个策略能够承载的资金规模：
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="card" style="padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div class="pipeline-step-num" style="width: 28px; height: 28px; font-size: 12px;">1</div>
+                    <h5 style="font-size: 14px; font-weight: 700; color: var(--ink); margin: 0;">滑点成本</h5>
+                </div>
+                <p style="font-size: 13px; color: var(--slate); line-height: 1.7;">
+                    策略触发买入信号时有目标价，但实际能买到多少取决于市场挂单量。资金越多需要吃掉的卖盘越多，<strong>滑点成本越高</strong>。
+                </p>
+            </div>
+            <div class="card" style="padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div class="pipeline-step-num" style="width: 28px; height: 28px; font-size: 12px;">2</div>
+                    <h5 style="font-size: 14px; font-weight: 700; color: var(--ink); margin: 0;">成交量匹配</h5>
+                </div>
+                <p style="font-size: 13px; color: var(--slate); line-height: 1.7;">
+                    回测中通过<strong>价格区间成交量分摊法</strong>来估算——假设成交量均匀分布在价格区间内，计算有效区间内的可交易量。
+                </p>
+            </div>
+            <div class="card" style="padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div class="pipeline-step-num" style="width: 28px; height: 28px; font-size: 12px;">3</div>
+                    <h5 style="font-size: 14px; font-weight: 700; color: var(--ink); margin: 0;">数据频率影响</h5>
+                </div>
+                <p style="font-size: 13px; color: var(--slate); line-height: 1.7;">
+                    日线数据精度最低（误差大） &rarr; 分时数据精度较高 &rarr; Tick级数据最精确。数据频率直接影响容量估算的可靠性。
+                </p>
+            </div>
+            <div class="card" style="padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div class="pipeline-step-num" style="width: 28px; height: 28px; font-size: 12px;">4</div>
+                    <h5 style="font-size: 14px; font-weight: 700; color: var(--ink); margin: 0;">回测容量评估</h5>
+                </div>
+                <p style="font-size: 13px; color: var(--slate); line-height: 1.7;">
+                    在不同规模下做回测，观察超额收益随规模的变化。例如衍复的小市值指增策略容量约<strong>200亿</strong>——在200亿规模下相较500亿、1000亿仍有明显优势。
+                </p>
+            </div>
+        </div>
+        <div class="card" style="padding: 20px; margin-top: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <div class="pipeline-step-num" style="width: 28px; height: 28px; font-size: 12px;">5</div>
+                <h5 style="font-size: 14px; font-weight: 700; color: var(--ink); margin: 0;">实际偏差</h5>
+            </div>
+            <p style="font-size: 13px; color: var(--slate); line-height: 1.7;">
+                历史成交数据会不合理地限制容量估算，因为<strong>其他策略也在争夺同样的成交量</strong>。实际容量往往低于回测估算的结果。
+            </p>
+        </div>
+    </div>
+
+    <!-- Small Capital Advantage -->
+    <div class="callout callout-green" style="margin-top: 28px; margin-bottom: 28px;">
+        <div class="callout-icon">&#128161;</div>
+        <div class="callout-body">
+            <div class="callout-title">小资金的独特优势</div>
+            <div class="callout-text">
+                策略容量的核心瓶颈在于交易对市场的冲击。资金量越小，对市场几乎无冲击，几乎可以确保以指定价格成交。因此，<strong>小资金、小团队甚至个人投资者在量化交易中拥有独特的灵活优势</strong>——这也是个人量化策略在近年兴起的原因之一。
+            </div>
+            <p style="font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px;">
+                —— 衍复播客
+            </p>
+        </div>
+    </div>
+
+    <!-- Frequency-Capacity Comparison Table -->
+    <div class="subsection">
+        <div class="subsection-title">策略频率与容量对照</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>策略频率</th>
+                        <th>典型容量</th>
+                        <th>超额收益水平</th>
+                        <th>代表策略</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>高频（日内）</strong></td>
+                        <td>&lt;50亿</td>
+                        <td style="color: var(--green); font-weight: 600;">最高</td>
+                        <td>T0、做市</td>
+                    </tr>
+                    <tr>
+                        <td><strong>中频（日/周频）</strong></td>
+                        <td>100-300亿</td>
+                        <td style="color: var(--accent); font-weight: 600;">较高</td>
+                        <td>量价因子、指数增强</td>
+                    </tr>
+                    <tr>
+                        <td><strong>低频（周/月频）</strong></td>
+                        <td>500-1000亿</td>
+                        <td style="color: var(--warm); font-weight: 600;">中等</td>
+                        <td>基本面因子、量化选股</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

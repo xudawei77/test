@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10-公募与私募 | 量化基金投资系统培训教程</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;600;700;900&display=swap');
+
+/* ========== Reset & Base ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  color: #1a1a2e;
+  background: #f0f0f8;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+h1, h2, h3, h4 { font-family: 'Noto Serif SC', serif; line-height: 1.4; }
+
+/* ========== Top Nav ========== */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 2px 20px rgba(102, 126, 234, 0.4);
+  padding: 0;
+}
+.topnav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; flex-wrap: wrap;
+  padding: 0 1rem;
+}
+.topnav-brand {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 700; font-size: 1rem;
+  color: #fff; padding: 0.75rem 1rem 0.75rem 0;
+  white-space: nowrap; text-decoration: none;
+}
+.topnav-links {
+  display: flex; flex-wrap: wrap; gap: 2px;
+}
+.topnav-links a {
+  color: rgba(255,255,255,0.78);
+  text-decoration: none;
+  font-size: 0.82rem; font-weight: 500;
+  padding: 0.65rem 0.7rem;
+  border-radius: 6px 6px 0 0;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+.topnav-links a:hover {
+  color: #fff; background: rgba(255,255,255,0.13);
+}
+.topnav-links a.active {
+  color: #fff;
+  background: rgba(255,255,255,0.2);
+  font-weight: 700;
+  border-bottom: 3px solid #ffd700;
+}
+
+/* ========== Hero ========== */
+.hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 7rem 1.5rem 3rem;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 2.6rem; font-weight: 900;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  margin-bottom: 0.5rem;
+}
+.hero .subtitle {
+  font-size: 1.1rem; opacity: 0.88;
+  font-weight: 300;
+}
+.hero .chapter-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 30px;
+  padding: 0.3rem 1.2rem;
+  font-size: 0.88rem; font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* ========== Container ========== */
+.container {
+  max-width: 1100px; margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* ========== Section ========== */
+.section {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(102,126,234,0.08);
+  padding: 2.5rem 2.5rem 2rem;
+  margin-bottom: 2rem;
+  border-left: 5px solid;
+  border-image: linear-gradient(180deg, #667eea, #764ba2) 1;
+}
+.section h2 {
+  font-size: 1.65rem; font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid #eef0ff;
+}
+.section h3 {
+  font-size: 1.25rem; font-weight: 700;
+  color: #4a3f8a;
+  margin: 1.5rem 0 0.8rem;
+}
+.section p, .section li {
+  font-size: 0.98rem; color: #333;
+  line-height: 1.85;
+  margin-bottom: 0.5rem;
+}
+.section ul { padding-left: 1.5rem; }
+.section li { margin-bottom: 0.4rem; }
+
+/* ========== Comparison Table ========== */
+.comparison-table {
+  width: 100%; border-collapse: collapse;
+  margin: 1.5rem 0; font-size: 0.9rem;
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.comparison-table thead th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff; padding: 0.85rem 0.8rem;
+  font-weight: 700; text-align: center;
+  font-size: 0.92rem;
+}
+.comparison-table thead th:first-child { text-align: left; }
+.comparison-table tbody td {
+  padding: 0.75rem 0.8rem;
+  border-bottom: 1px solid #eef0ff;
+  text-align: center;
+}
+.comparison-table tbody td:first-child {
+  text-align: left; font-weight: 600; color: #4a3f8a;
+  background: #faf9ff;
+}
+.comparison-table tbody tr:hover { background: #f5f3ff; }
+.comparison-table tbody tr:last-child td { border-bottom: none; }
+
+/* Two-column comparison header */
+.comparison-table thead th.col-public {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+.comparison-table thead th.col-private {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+/* ========== Side-by-Side Cards ========== */
+.dual-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.dual-card {
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+  background: #fff;
+}
+.dual-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(102,126,234,0.18);
+}
+.dual-card-header {
+  padding: 1.2rem 1.5rem;
+  color: #fff;
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 700; font-size: 1.15rem;
+}
+.dual-card-header.public {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: #0a3d5c;
+}
+.dual-card-header.private {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+.dual-card-header .card-subtitle {
+  font-size: 0.82rem; opacity: 0.85;
+  font-weight: 400; margin-top: 0.3rem;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+.dual-card-body { padding: 1.3rem 1.5rem; }
+.dual-card-body ul { list-style: none; padding: 0; }
+.dual-card-body li {
+  font-size: 0.92rem; padding: 0.35rem 0;
+  padding-left: 1.4rem; position: relative;
+  line-height: 1.7;
+}
+.dual-card-body li::before {
+  content: ''; position: absolute; left: 0; top: 0.7rem;
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.dual-card.public-card .dual-card-body li::before { background: #4facfe; }
+.dual-card.private-card .dual-card-body li::before { background: #764ba2; }
+.dual-card-body li strong {
+  color: #4a3f8a; font-weight: 700;
+}
+
+/* ========== Decision Cards ========== */
+.decision-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.decision-card {
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+  background: #fff;
+  border-top: 4px solid;
+}
+.decision-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(102,126,234,0.18);
+}
+.decision-card.card-public { border-top-color: #4facfe; }
+.decision-card.card-private { border-top-color: #764ba2; }
+.decision-card.card-family { border-top-color: #f5576c; }
+.decision-card-header {
+  padding: 1.2rem 1.5rem 0.5rem;
+}
+.decision-card-header h4 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.15rem; font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.decision-card-header p {
+  font-size: 0.85rem; color: #888;
+  margin: 0;
+}
+.decision-card.card-public .decision-card-header h4 { color: #2b7abf; }
+.decision-card.card-private .decision-card-header h4 { color: #5a3d9a; }
+.decision-card.card-family .decision-card-header h4 { color: #d4455a; }
+.decision-card-body { padding: 0.5rem 1.5rem 1.3rem; }
+.decision-card-body ul { list-style: none; padding: 0; }
+.decision-card-body li {
+  font-size: 0.92rem; padding: 0.3rem 0;
+  padding-left: 1.4rem; position: relative;
+  line-height: 1.7; color: #444;
+}
+.decision-card-body li::before {
+  content: ''; position: absolute; left: 0; top: 0.65rem;
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.decision-card.card-public .decision-card-body li::before { background: #4facfe; }
+.decision-card.card-private .decision-card-body li::before { background: #764ba2; }
+.decision-card.card-family .decision-card-body li::before { background: #f5576c; }
+
+/* ========== Tip / Insight Cards ========== */
+.tip-cards {
+  display: flex; flex-direction: column; gap: 1rem;
+  margin: 1.5rem 0;
+}
+.tip-card {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  border-radius: 12px;
+  padding: 1.3rem 1.5rem;
+  border-left: 4px solid;
+  border-image: linear-gradient(180deg, #667eea, #764ba2) 1;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.tip-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(102,126,234,0.12);
+}
+.tip-card .tip-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff; font-size: 0.82rem; font-weight: 700;
+  margin-right: 0.6rem;
+  flex-shrink: 0;
+}
+.tip-card .tip-text {
+  display: flex; align-items: flex-start; gap: 0;
+}
+.tip-card p {
+  font-size: 0.95rem; color: #3a3560;
+  line-height: 1.8; margin: 0;
+}
+
+/* ========== Highlight Box ========== */
+.highlight-box {
+  background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.08));
+  border: 1px solid rgba(102,126,234,0.2);
+  border-radius: 12px;
+  padding: 1.5rem 1.8rem;
+  margin: 1.5rem 0;
+}
+.highlight-box .hl-label {
+  font-size: 0.82rem; font-weight: 700;
+  color: #667eea; letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.highlight-box p {
+  font-size: 0.95rem; color: #444;
+  line-height: 1.85;
+}
+.highlight-box .source {
+  font-size: 0.82rem; color: #999;
+  margin-top: 0.5rem; font-style: italic;
+}
+
+/* ========== Navigation Footer ========== */
+.nav-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 2rem; gap: 1rem;
+}
+.nav-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.8rem 1.8rem;
+  border-radius: 50px; text-decoration: none;
+  font-weight: 600; font-size: 0.95rem;
+  transition: all 0.3s;
+}
+.nav-btn.prev {
+  background: #fff; color: #764ba2;
+  border: 2px solid #764ba2;
+}
+.nav-btn.prev:hover { background: #764ba2; color: #fff; }
+.nav-btn.next {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff; border: 2px solid transparent;
+}
+.nav-btn.next:hover { box-shadow: 0 6px 20px rgba(102,126,234,0.4); transform: translateY(-2px); }
+
+/* ========== Footer ========== */
+footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #888; font-size: 0.82rem;
+  border-top: 1px solid #e8e4f8;
+  margin-top: 1rem;
+}
+footer .back-home {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: #667eea; text-decoration: none;
+  font-weight: 600;
+}
+footer .back-home:hover { text-decoration: underline; }
+footer .disclaimer {
+  max-width: 600px; margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .topnav-inner { flex-direction: column; align-items: flex-start; }
+  .topnav-links { width: 100%; overflow-x: auto; padding-bottom: 0.3rem; }
+  .hero h1 { font-size: 1.8rem; }
+  .section { padding: 1.5rem 1.2rem; }
+  .dual-cards, .decision-grid { grid-template-columns: 1fr; }
+  .comparison-table { font-size: 0.78rem; }
+  .comparison-table thead th, .comparison-table tbody td { padding: 0.55rem 0.4rem; }
+  .nav-footer { flex-direction: column; }
+}
+
+/* ========== Print ========== */
+@media print {
+  .topnav, .nav-footer { display: none !important; }
+  .hero { padding-top: 1rem; background: #fff; color: #333; }
+  .hero h1 { text-shadow: none; font-size: 2rem; color: #333; }
+  .section { box-shadow: none; border-left: 3px solid #764ba2; break-inside: avoid; }
+  body { background: #fff; }
+  .dual-card, .decision-card { box-shadow: none; border: 1px solid #ccc; }
+  .dual-card:hover, .decision-card:hover { transform: none; }
+  footer { border-top: 2px solid #333; color: #555; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== Top Nav ========== -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-brand">量化基金培训</a>
+    <div class="topnav-links">
+        <a href="index.html">首页</a>
+        <a href="01-量化投资基础.html">基础原理</a>
+        <a href="02-策略全景图.html">策略全景</a>
+        <a href="03-因子与模型.html">因子模型</a>
+        <a href="04-风险管理.html">风险管理</a>
+        <a href="05-基金经理评估.html">经理评估</a>
+        <a href="06-机构图谱.html">机构图谱</a>
+        <a href="07-择时与配置.html">择时配置</a>
+        <a href="08-配置框架.html">配置框架</a>
+        <a href="09-案例实战.html">案例实战</a>
+        <a href="10-公募与私募.html" class="active">公募私募</a>
+        <a href="11-行业前沿.html">行业前沿</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== Hero ========== -->
+<div class="hero">
+  <div class="chapter-badge">CHAPTER 10</div>
+  <h1>公募量化与私募量化</h1>
+  <p class="subtitle">理解两种量化产品的底层差异，做出明智的投资选择</p>
+</div>
+
+<!-- ========== Main Content ========== -->
+<div class="container">
+
+  <!-- ===== 一、公募量化与私募量化的底层差异 ===== -->
+  <div class="section">
+    <h2>一、公募量化与私募量化的底层差异</h2>
+    <p>公募基金与私募基金在监管约束、产品设计和运作方式上存在根本差异，这直接决定了二者在量化策略上的能力边界。</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>对比维度</th>
+          <th class="col-public">公募量化</th>
+          <th class="col-private">私募量化</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>投资限制</td>
+          <td>持仓比例严格（单只不超10%）、换手率受限（双倍率&le;200%）、衍生品使用受限</td>
+          <td>灵活度高，可日内交易、使用期货对冲、灵活调整仓位</td>
+        </tr>
+        <tr>
+          <td>信息披露</td>
+          <td>每日公布净值、季报/半年报/年报、持仓透明</td>
+          <td>通常周/月度公布净值，信息披露较少</td>
+        </tr>
+        <tr>
+          <td>费率结构</td>
+          <td>管理费 0.5-1.5%/年、无业绩报酬</td>
+          <td>管理费 1-2%/年 + 20% 业绩报酬（高水位法）</td>
+        </tr>
+        <tr>
+          <td>资金门槛</td>
+          <td>100 元起</td>
+          <td>合格投资者 100 万起</td>
+        </tr>
+        <tr>
+          <td>流动性</td>
+          <td>T+1 赎回，流动性极佳</td>
+          <td>通常封闭 6-12 个月，之后月度或季度开放</td>
+        </tr>
+        <tr>
+          <td>策略工具</td>
+          <td>以基本面因子为主，量价因子受换手率限制，不可做日内 T+0</td>
+          <td>工具箱丰富 &mdash; 量价、高频、日内、期货对冲、融券等</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 二、策略能力对比 ===== -->
+  <div class="section">
+    <h2>二、策略能力对比 &mdash; "血脉"与"源头"</h2>
+    <p>公募与私募量化的策略基因截然不同，理解其"血脉"与"源头"有助于更好地选择产品。</p>
+
+    <div class="dual-cards">
+      <!-- 公募量化血脉 -->
+      <div class="dual-card public-card">
+        <div class="dual-card-header public">
+          公募量化的"血脉"
+          <div class="card-subtitle">来源：BGI 三巨头 &mdash; 李笑薇、田汉卿等从巴克莱归来</div>
+        </div>
+        <div class="dual-card-body">
+          <ul>
+            <li><strong>起点：</strong>以指数增强为起点，Barra 分析框架为核心方法论</li>
+            <li><strong>核心因子：</strong>基本面因子为核心（价值、质量、成长、红利）</li>
+            <li><strong>产品策略：</strong>产品线工具化 &mdash; 把 300/500/1000/2000/A500 指增做全</li>
+            <li><strong>代表机构：</strong>国君量化、招商量化精选、华夏孙萌、中信保诚提云涛、富国、中欧 MASS 工厂</li>
+            <li><strong>特色：</strong>每家量化团队风格高度差异化，与创始人背景紧密相关</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 私募量化源头 -->
+      <div class="dual-card private-card">
+        <div class="dual-card-header private">
+          私募量化的"源头"
+          <div class="card-subtitle">来源：世昆系 WorldQuant &mdash; 行为金融学为底层逻辑</div>
+        </div>
+        <div class="dual-card-body">
+          <ul>
+            <li><strong>起点：</strong>从量价因子挖掘起步，行为金融学为底层逻辑</li>
+            <li><strong>核心因子：</strong>以动量、技术面、非基本面因子为主</li>
+            <li><strong>技术演进：</strong>深度学习与大模型端到端系统</li>
+            <li><strong>竞争焦点：</strong>AI 军备竞赛 &mdash; 算力、数据、人才的全面竞争</li>
+            <li><strong>代表机构：</strong>九坤、灵均、幻方、平方和等世昆系背景</li>
+            <li><strong>特色：</strong>同质性较高，比拼的是因子迭代速度和技术壁垒</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 三、业绩表现对比 ===== -->
+  <div class="section">
+    <h2>三、业绩表现对比</h2>
+    <p>从实际数据看公募与私募量化的收益差距，特别需要关注费后实际到手收益。</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th class="col-public">公募量化指增</th>
+          <th class="col-private">私募量化指增</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2025年平均收益</td>
+          <td>~30-35%</td>
+          <td>~45%</td>
+        </tr>
+        <tr>
+          <td>超额收益</td>
+          <td>年化 5-10%</td>
+          <td>年化 10-20%</td>
+        </tr>
+        <tr>
+          <td>费后实际到手</td>
+          <td>几乎全额（低费率）</td>
+          <td>需扣管理费 2% + 业绩报酬 20%</td>
+        </tr>
+        <tr>
+          <td>信息比率</td>
+          <td>1.0-1.5</td>
+          <td>1.5-3.0</td>
+        </tr>
+        <tr>
+          <td>策略丰富度</td>
+          <td>指增为主</td>
+          <td>指增 / 中性 / CTA / T0 / 灵活对冲</td>
+        </tr>
+        <tr>
+          <td>代表产品举例</td>
+          <td>招商量化精选（长期不输私募）、易方达量化衍生</td>
+          <td>九坤 500 指增、幻方 1000 指增</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <div class="hl-label">核心洞察</div>
+      <p>公募 40% 的收益已经到手了，但私募需要先做出 55-60% 的毛收益，扣除管理费和 20% 业绩报酬后才能到手 40%。费后收益差距正在缩小。</p>
+      <div class="source">&mdash; 来源：楚团长播客</div>
+    </div>
+  </div>
+
+  <!-- ===== 四、选择决策框架 ===== -->
+  <div class="section">
+    <h2>四、选择决策框架</h2>
+    <p>根据自身资金规模、流动性需求和风险偏好，选择合适的量化产品类型。</p>
+
+    <div class="decision-grid">
+      <!-- 适合公募 -->
+      <div class="decision-card card-public">
+        <div class="decision-card-header">
+          <h4>适合选公募量化的场景</h4>
+          <p>低门槛、高透明、好流动性</p>
+        </div>
+        <div class="decision-card-body">
+          <ul>
+            <li>资金量较小（&lt;100万）</li>
+            <li>看重透明度和信息披露</li>
+            <li>需要随时赎回的流动性</li>
+            <li>希望以低成本获取市场 Beta + 适度 Alpha</li>
+            <li>偏好基本面因子、长期持有</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 适合私募 -->
+      <div class="decision-card card-private">
+        <div class="decision-card-header">
+          <h4>适合选私募量化的场景</h4>
+          <p>高 Alpha、多策略、强技术</p>
+        </div>
+        <div class="decision-card-body">
+          <ul>
+            <li>合格投资者（&ge;100万）</li>
+            <li>追求更高的超额收益</li>
+            <li>需要更多策略类型（中性、CTA、灵活对冲等）</li>
+            <li>能接受 6-12 个月封闭期</li>
+            <li>看重量价因子和 AI 技术的 Alpha 挖掘</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 家办配置建议 -->
+      <div class="decision-card card-family">
+        <div class="decision-card-header">
+          <h4>家办配置建议</h4>
+          <p>公私募灵活搭配，分层配置</p>
+        </div>
+        <div class="decision-card-body">
+          <ul>
+            <li><strong>核心底仓：</strong>私募中性策略（绝对收益目标）</li>
+            <li><strong>弹性层：</strong>私募指增 + 公募指增组合（降低费用、增加透明度）</li>
+            <li><strong>小额参与：</strong>公募量化精选产品（费率低、流动性好）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 五、关键结论 ===== -->
+  <div class="section">
+    <h2>五、关键结论</h2>
+
+    <div class="tip-cards">
+      <div class="tip-card">
+        <div class="tip-text">
+          <span class="tip-num">1</span>
+          <p>公募量化在微盘股风格被充分挖掘后有了显著进步，已经不再是"不能跟私募比"的状态。</p>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-text">
+          <span class="tip-num">2</span>
+          <p>私募的超额优势仍然存在，但需要扣除更高的费率 &mdash; 费后收益差距在缩小。</p>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-text">
+          <span class="tip-num">3</span>
+          <p>公募每家量化团队的侧重点都非常不同（如招商王平的 PB-ROE 思维、华夏孙萌的 AI 因子挖掘），选择时要理解团队"血脉"。</p>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-text">
+          <span class="tip-num">4</span>
+          <p>对于家办投资者，公私募并非二选一，而是可以根据不同层级灵活搭配。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== Prev / Next ========== -->
+  <div class="nav-footer">
+    <a href="09-案例实战.html" class="nav-btn prev">&larr; 上一章：案例实战</a>
+    <a href="11-行业前沿.html" class="nav-btn next">下一章：行业前沿 &rarr;</a>
+  </div>
+
+</div>
+
+<!-- ========== Footer ========== -->
+<footer>
+  <a href="index.html" class="back-home">&larr; 返回目录</a>
+  <div class="disclaimer">
+    量化基金投资系统培训教程 &middot; 仅供内部学习参考 &middot; 不构成任何投资建议
+  </div>
+</footer>
+
+</body>
+</html>

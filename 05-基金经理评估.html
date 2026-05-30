@@ -599,6 +599,8 @@
         <a href="07-择时与配置.html">择时配置</a>
         <a href="08-配置框架.html">配置框架</a>
         <a href="09-案例实战.html">案例实战</a>
+        <a href="10-公募与私募.html">公募私募</a>
+        <a href="11-行业前沿.html">行业前沿</a>
     </div>
     </div>
 </nav>
@@ -1072,6 +1074,19 @@
                 </div>
             </div>
         </div>
+
+        <div class="card">
+            <h3 class="sub">不可能三角的实操意义</h3>
+            <div class="highlight-box" style="margin-top:0;">
+                <h4>量化不可能三角：策略容量评估的核心框架</h4>
+                <p style="line-height:1.8;">在尽调中评估管理人的策略容量时，"量化不可能三角"是一个核心分析框架。具体应用：</p>
+                <ul style="margin-top:10px;padding-left:18px;">
+                    <li style="font-size:14px;color:var(--slate);line-height:1.8;">当管理人规模快速增长（如从50亿跃升至200亿）时，需密切关注超额收益是否同步衰减</li>
+                    <li style="font-size:14px;color:var(--slate);line-height:1.8;">询问管理人"你的策略容量上限是多少？怎么测算的？"——好的管理人能给出基于回测的明确答案</li>
+                    <li style="font-size:14px;color:var(--slate);line-height:1.8;">衍复投资高亢的案例：在400亿规模下仍有历史数据支撑的超额表现，各产品线合计容量可做到千亿以上，但存量规模不到500亿，距上限仍有空间</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- ═══════ Section 4: 产品选择实操 ═══════ -->
@@ -1205,6 +1220,47 @@
                     <div class="field-label">止损线</div>
                     <div class="field-value">0.80-0.85</div>
                     <div class="field-note">净值触及后清仓</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="sub">超额夏普的选基局限</h3>
+            <div class="tip-box" style="margin:0;">
+                <div class="tip-icon">&#9888;</div>
+                <div>
+                    <p><strong>超额夏普比率是常用筛选指标，但不应作为唯一标准：</strong></p>
+                    <ul style="margin-top:10px;padding-left:18px;">
+                        <li style="font-size:13px;color:var(--slate);line-height:1.8;">短期超额夏普（1年）对未来预测力有限</li>
+                        <li style="font-size:13px;color:var(--slate);line-height:1.8;">不同基准指数的超额夏普不可直接比较——1000指增天然高于300指增</li>
+                        <li style="font-size:13px;color:var(--slate);line-height:1.8;">极高超额夏普可能反映策略集中度风险，而非真正的风控能力</li>
+                        <li style="font-size:13px;color:var(--slate);line-height:1.8;">建议用多维指标体系：超额收益稳定性 + 超额最大回撤 + 信息比率 + 策略容量评估</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="sub">不同市场环境下的选基策略</h3>
+            <p style="font-size:14px;color:var(--slate);margin-bottom:16px;">
+                选基策略不应一成不变，不同市场环境下应侧重不同维度的评估指标。
+            </p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+                <div style="background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(16,185,129,0.02));border:1px solid rgba(16,185,129,0.15);border-radius:12px;padding:20px;">
+                    <h4 style="font-size:14px;font-weight:700;color:#10b981;margin-bottom:8px;">牛市/普涨期</h4>
+                    <p style="font-size:13px;color:var(--slate);line-height:1.7;">关注Beta弹性大的产品（如1000指增、量化选股），超额指标退居次要</p>
+                </div>
+                <div style="background:linear-gradient(135deg,rgba(102,126,234,0.06),rgba(118,75,162,0.02));border:1px solid rgba(102,126,234,0.15);border-radius:12px;padding:20px;">
+                    <h4 style="font-size:14px;font-weight:700;color:#667eea;margin-bottom:8px;">震荡市</h4>
+                    <p style="font-size:13px;color:var(--slate);line-height:1.7;">超额收益稳定性最重要，关注信息比率和月胜率</p>
+                </div>
+                <div style="background:linear-gradient(135deg,rgba(239,68,68,0.06),rgba(239,68,68,0.02));border:1px solid rgba(239,68,68,0.15);border-radius:12px;padding:20px;">
+                    <h4 style="font-size:14px;font-weight:700;color:#ef4444;margin-bottom:8px;">熊市/危机期</h4>
+                    <p style="font-size:13px;color:var(--slate);line-height:1.7;">回撤控制能力是第一考量，关注超额最大回撤和修复速度</p>
+                </div>
+                <div style="background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(245,158,11,0.02));border:1px solid rgba(245,158,11,0.15);border-radius:12px;padding:20px;">
+                    <h4 style="font-size:14px;font-weight:700;color:#f59e0b;margin-bottom:8px;">风格极端分化期</h4>
+                    <p style="font-size:13px;color:var(--slate);line-height:1.7;">关注管理人的风格暴露控制（Barra因子约束严格度）</p>
                 </div>
             </div>
         </div>
@@ -1347,6 +1403,27 @@
             <div class="tip-icon">&#128203;</div>
             <div>
                 <p><strong>尽调建议：</strong>建议在尽调前将以上20个问题打印为清单，逐项记录管理人的回答。重点关注回答的<strong>具体性和可验证性</strong>——含糊的回答本身就是一种信号。同时，交叉验证不同维度信息的一致性，如策略容量与规模管理是否匹配、团队规模与IT投入是否匹配等。</p>
+            </div>
+        </div>
+
+        <!-- Strategy Capacity Due Diligence Questions -->
+        <div class="checklist-group" style="margin-top:32px;">
+            <h4><span class="num-badge">6</span>策略容量评估的尽调问题（3个）</h4>
+            <div class="card" style="margin-bottom:0;">
+                <ul class="checklist">
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div><strong>21.</strong> 策略容量上限是多少？是通过什么方法（回测/实盘）测算的？当前规模距上限还有多大空间？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div><strong>22.</strong> 在不同规模下的超额收益衰减曲线是怎样的？有没有做过规模压力测试？</div>
+                    </li>
+                    <li>
+                        <div class="check-box" onclick="this.classList.toggle('checked')"></div>
+                        <div><strong>23.</strong> 规模快速增长时（如半年内翻倍），策略是否做过调整？调整了什么？</div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
